@@ -3,10 +3,11 @@ import 'pages/login.dart';
 import 'pages/signup.dart';
 
 void main() {
-  runApp(SitogaApp());
+  runApp(MyApp());
 }
 
-class SitogaApp extends StatelessWidget {
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
