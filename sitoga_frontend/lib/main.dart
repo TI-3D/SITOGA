@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'pages/login.dart';
 import 'pages/signup.dart';
+import 'pages/scan.dart';
+import 'pages/plant_detail.dart';
 
 void main() {
   runApp(MyApp());
@@ -18,6 +20,8 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => LoginPage(),
         '/signup': (context) => SignupPage(),
+        '/scan': (context) => CameraScannerPage(),
+        '/plantDetail': (context) => PlantDetailPage(),
       },
     );
   }
