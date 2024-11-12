@@ -1,22 +1,31 @@
 import 'package:flutter/material.dart';
 import 'pages/login.dart';
 import 'pages/signup.dart';
+import 'pages/scan.dart';
+import 'pages/plant_detail.dart';
+import 'pages/home.dart';
+import 'pages/library.dart';
 
 void main() {
-  runApp(SitogaApp());
+  runApp(MyApp());
 }
 
-class SitogaApp extends StatelessWidget {
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'SITOGA',
       theme: ThemeData.dark(),
       debugShowCheckedModeBanner: false,
-      initialRoute: '/',
+      initialRoute: '/home',
       routes: {
         '/': (context) => LoginPage(),
         '/signup': (context) => SignupPage(),
+        '/scan': (context) => CameraScannerPage(),
+        '/plantDetail': (context) => PlantDetailPage(),
+        '/home': (context) => HomePage(),
+        '/library': (context) => LibraryPage(),
       },
     );
   }
