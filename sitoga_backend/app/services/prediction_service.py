@@ -5,7 +5,7 @@ from tensorflow.keras.models import load_model
 from sklearn.preprocessing import LabelEncoder
 
 # Load model dan label encoder
-model = load_model('app/ml/plant_model.h5')
+model = load_model('app/ml/plant_models_CNN.h5')
 label_encoder = np.load('app/ml/label_encoder.npy', allow_pickle=True)
 
 # Fungsi untuk memproses gambar dan melakukan prediksi

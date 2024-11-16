@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine, Column, Integer, String, Enum, DateTime, Text, ForeignKey
 # from sqlalchemy.orm import relationship
 
-from .database import Base, engine
+from ..db.database import Base, engine
 
 # Membuat struktur model / tabel database SITOGA_DB
 

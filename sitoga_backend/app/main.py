@@ -1,6 +1,9 @@
 from fastapi import FastAPI, Request
-from app.api.api_v1.endpoints import prediction
+from app.router.user import prediction
+from app.router.globals.db import router as db_router
 from fastapi.responses import JSONResponse
+import os 
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 
 app = FastAPI()
 
@@ -12,9 +15,12 @@ async def custom_exception_handler(request: Request, exc: Exception):
             "detail": str(exc)
         },
     )
+    
+#global
+app.include_router(db_router, prefix="/db", tags=["db"])
+#auth
 
+#user
 app.include_router(prediction.router, prefix="/predict", tags=["prediction"])
 
-# @app.get("/")
-# async def root():
-#     return {"message": "Hello World"}
+#admin
