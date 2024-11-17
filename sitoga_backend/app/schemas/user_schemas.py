@@ -4,7 +4,7 @@ from datetime import datetime
 
 # Role Schema
 class RoleBase(BaseModel):
-    role_id: str
+    role_id: int
     role_name: str
 
     class Config:
@@ -14,19 +14,25 @@ class RoleBase(BaseModel):
 class UserBase(BaseModel):
     username: str
     email: str
-    role_id: str
+    role_id: int
 
 class UserCreate(UserBase):
     password: str
 
 class User(UserBase):
     user_id: int
+    role_id: int
     created_at: datetime
     updated_at: datetime
 
     class Config:
         from_attributes = True
 
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+    message: str
+    
 # Plants Schema
 class PlantBase(BaseModel):
     plant_name: str

@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, Enum, DateTime, Text, ForeignKey
+from sqlalchemy import create_engine, Column, Integer, String, Enum, DateTime, Text, ForeignKey, func
 # from sqlalchemy.orm import relationship
 
 from ..db.database import Base, engine
@@ -19,8 +19,8 @@ class User(Base):
     password = Column(String(255))
     email = Column(String(100))
     role_id = Column(Enum('0', '1'), ForeignKey('roles.role_id'))
-    created_at = Column(DateTime)
-    updated_at = Column(DateTime)
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
 
 # Plants
 class Plants(Base):
