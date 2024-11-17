@@ -1,6 +1,6 @@
 from fastapi import APIRouter, File, UploadFile, HTTPException
 from fastapi.responses import JSONResponse
-from app.services.prediction_service import predict_plant
+from app.services.user_service.prediction_service import predict_plant
 
 router = APIRouter()
 
