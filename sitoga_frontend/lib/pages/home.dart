@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sitoga_frontend/pages/favorites.dart';
 import 'library.dart';
 import 'home_screen.dart';
 import 'scan.dart';
@@ -14,7 +15,7 @@ class _HomePageState extends State<HomePage> {
   // Halaman yang akan dituju berdasarkan item yang dipilih
   final List<Widget> _pages = [
     HomeScreen(), // HomePage
-    HomeScreen(), // GridPage
+    FavoritePage(), // FavoritePage
     LibraryPage(), // LibraryPage
     LibraryPage(), // RecipePage
   ];
@@ -35,38 +36,41 @@ class _HomePageState extends State<HomePage> {
     switch (_selectedIndex) {
       case 0:
         appBar = AppBar(
-          title: Text("Home Page"), // AppBar khusus untuk halaman HomePage
+          title: const Text("Home"),
           backgroundColor: Colors.black,
+          automaticallyImplyLeading: false,
         );
         break;
       case 1:
         appBar = AppBar(
-          title: Text("Grid Page"), // AppBar khusus untuk halaman GridPage
+          title: const Text("Favorites"),
           backgroundColor: Colors.black,
+          automaticallyImplyLeading: false,
         );
         break;
       case 2:
         appBar = AppBar(
-          title: Text("Library"), // AppBar khusus untuk halaman Library
+          title: const Text("Library"),
           backgroundColor: Colors.black,
+          automaticallyImplyLeading: false,
         );
         break;
       case 3:
         appBar = AppBar(
-          title: Text("Recipe"), // AppBar khusus untuk halaman RecipePage
+          title: const Text("Recipe"),
           backgroundColor: Colors.black,
+          automaticallyImplyLeading: false,
         );
         break;
       default:
         appBar = AppBar(
-          title: Text("Hi Abby"), // Default AppBar
+          title: const Text("Default"),
         );
     }
 
     return Scaffold(
       appBar: appBar, // Menampilkan AppBar yang sesuai dengan halaman
-      body: _pages[
-          _selectedIndex], // Menampilkan halaman sesuai dengan index yang dipilih
+      body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         backgroundColor: Colors.black,
@@ -74,10 +78,10 @@ class _HomePageState extends State<HomePage> {
         unselectedItemColor: Colors.white,
         showUnselectedLabels: false,
         type: BottomNavigationBarType.fixed,
-        onTap: _onItemTapped, // Menambahkan fungsi _onItemTapped ke onTap
-        items: [
+        onTap: _onItemTapped,
+        items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.grid_view), label: 'Grid'),
+          BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Favorites'),
           BottomNavigationBarItem(
             icon: ImageIcon(
               AssetImage("assets/icons/library_icon.png"),
@@ -92,20 +96,17 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      // Menambahkan FloatingActionButton untuk navigasi ke halaman ScanningPage
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    CameraScannerPage()), // Pindah ke halaman Scanning
+            MaterialPageRoute(builder: (context) => CameraScannerPage()),
           );
         },
         backgroundColor: Colors.green,
         child: Image.asset(
           "assets/icons/scan_icon.png",
-          width: 24, // Adjust size as needed
+          width: 24,
           height: 24,
         ),
       ),
