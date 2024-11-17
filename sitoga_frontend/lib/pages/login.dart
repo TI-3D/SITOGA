@@ -1,9 +1,37 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import '../pages/forgot_password.dart';
 
 class LoginPage extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+
+  Future<String?> login(String username, String password) async {
+    final url = Uri.parse(
+        'http://127.0.0.1:8000/auth/login'); // Ganti dengan URL backend
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type':
+            'application/x-www-form-urlencoded', // Format sesuai OAuth2
+      },
+      body: {
+        'username': username,
+        'password': password,
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      print('Login berhasil! Token: ${data['access_token']}');
+      return data['access_token']; // Mengembalikan token
+    } else {
+      print('Login gagal: ${response.body}');
+      throw Exception('Login gagal: ${response.body}');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +133,8 @@ class LoginPage extends StatelessWidget {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => ForgotPasswordPage()),
+                            MaterialPageRoute(
+                                builder: (context) => ForgotPasswordPage()),
                           );
                         },
                         child: Text(
@@ -116,8 +145,25 @@ class LoginPage extends StatelessWidget {
                     ),
                     SizedBox(height: 32),
                     ElevatedButton(
-                      onPressed: () {
-                        // Logic untuk login
+                      onPressed: () async {
+                        String username = emailController.text;
+                        String password = passwordController.text;
+
+                        try {
+                          // Panggil fungsi login dan dapatkan token
+                          final token = await login(username, password);
+
+                          if (token != null) {
+                            // Navigasi ke halaman berikutnya
+                            Navigator.pushReplacementNamed(context,
+                                '/home'); // Ganti '/home' dengan rute halaman berikutnya
+                          }
+                        } catch (error) {
+                          // Tampilkan pesan error jika login gagal
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Login gagal: $error')),
+                          );
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color(0xFF75E00A),
@@ -176,21 +222,24 @@ class LoginPage extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         IconButton(
-                          icon: Image.asset('assets/icons/google_36.png'), // Ganti dengan path ikon Gmail Anda
+                          icon: Image.asset(
+                              'assets/icons/google_36.png'), // Ganti dengan path ikon Gmail Anda
                           onPressed: () {
                             // Logic untuk login dengan Gmail
                           },
                         ),
                         SizedBox(width: 20),
                         IconButton(
-                          icon: Image.asset('assets/icons/facebook_36.png'), // Ganti dengan path ikon Facebook Anda
+                          icon: Image.asset(
+                              'assets/icons/facebook_36.png'), // Ganti dengan path ikon Facebook Anda
                           onPressed: () {
                             // Logic untuk login dengan Facebook
                           },
                         ),
                         SizedBox(width: 20),
                         IconButton(
-                          icon: Image.asset('assets/icons/twitter_38.png'), // Ganti dengan path ikon Twitter Anda
+                          icon: Image.asset(
+                              'assets/icons/twitter_38.png'), // Ganti dengan path ikon Twitter Anda
                           onPressed: () {
                             // Logic untuk login dengan Twitter
                           },
