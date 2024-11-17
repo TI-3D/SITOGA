@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'plant_detail.dart'; // Halaman detail tanaman
+import 'plant_detail.dart';
 
 class FavoritePage extends StatefulWidget {
   const FavoritePage({Key? key}) : super(key: key);
@@ -9,7 +9,6 @@ class FavoritePage extends StatefulWidget {
 }
 
 class _FavoritePageState extends State<FavoritePage> {
-  // Data dummy untuk tanaman favorit
   final List<Map<String, dynamic>> favorites = [
     {
       'name': 'Ginkgo',
@@ -46,11 +45,6 @@ class _FavoritePageState extends State<FavoritePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Favorites'),
-        centerTitle: true,
-        backgroundColor: Colors.green,
-      ),
       body: favorites.isEmpty
           ? const Center(
               child: Text(
@@ -63,12 +57,11 @@ class _FavoritePageState extends State<FavoritePage> {
               itemBuilder: (context, index) {
                 final plant = favorites[index];
                 return Card(
-                  margin: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 8),
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: ListTile(
                     leading: GestureDetector(
                       onTap: () {
-                        // Navigasi ke halaman detail tanaman
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -77,7 +70,7 @@ class _FavoritePageState extends State<FavoritePage> {
                         );
                       },
                       child: Image.asset(
-                        plant['image'], // Gambar tanaman
+                        plant['image'],
                         fit: BoxFit.cover,
                         width: 60,
                         height: 60,
@@ -85,7 +78,6 @@ class _FavoritePageState extends State<FavoritePage> {
                     ),
                     title: GestureDetector(
                       onTap: () {
-                        // Navigasi ke halaman detail tanaman
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -94,7 +86,7 @@ class _FavoritePageState extends State<FavoritePage> {
                         );
                       },
                       child: Text(
-                        plant['name'], // Nama tanaman
+                        plant['name'],
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -102,7 +94,7 @@ class _FavoritePageState extends State<FavoritePage> {
                       ),
                     ),
                     subtitle: Text(
-                      plant['latinName'], // Nama latin
+                      plant['latinName'],
                       style: const TextStyle(
                           fontSize: 14, fontStyle: FontStyle.italic),
                     ),
@@ -110,7 +102,6 @@ class _FavoritePageState extends State<FavoritePage> {
                       icon: const Icon(Icons.delete, color: Colors.red),
                       onPressed: () {
                         setState(() {
-                          // Hapus tanaman dari daftar
                           favorites.removeAt(index);
                         });
                         ScaffoldMessenger.of(context).showSnackBar(
