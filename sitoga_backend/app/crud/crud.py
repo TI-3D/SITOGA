@@ -1,5 +1,14 @@
+from app.models import models
 from sqlalchemy.orm import Session
-from . import models, schemas
+from app.db.database import SessionLocal
+from app.schemas import schemas
+
+def get_db():
+    db = SessionLocal() 
+    try:
+        yield db  
+    finally:
+        db.close() 
 
 # CRUD operations for Role
 def create_role(db: Session, role: schemas.RoleBase):

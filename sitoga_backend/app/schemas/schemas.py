@@ -8,7 +8,7 @@ class RoleBase(BaseModel):
     role_name: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # User Schema
 class UserBase(BaseModel):
@@ -25,7 +25,7 @@ class User(UserBase):
     updated_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # Plants Schema
 class PlantBase(BaseModel):
@@ -36,7 +36,7 @@ class Plant(PlantBase):
     plant_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # Scanned Image Schema
 class ScannedImageBase(BaseModel):
@@ -49,7 +49,7 @@ class ScannedImage(ScannedImageBase):
     uploaded_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # Favorite Schema
 class FavoriteBase(BaseModel):
@@ -61,7 +61,7 @@ class Favorite(FavoriteBase):
     added_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # History Schema
 class HistoryBase(BaseModel):
@@ -74,7 +74,7 @@ class History(HistoryBase):
     scan_date: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # Recipe Schema
 class RecipeBase(BaseModel):
@@ -85,7 +85,7 @@ class Recipe(RecipeBase):
     recipe_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # Ingredients Schema
 class IngredientsBase(BaseModel):
@@ -97,4 +97,4 @@ class Ingredients(IngredientsBase):
     ingredient_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True

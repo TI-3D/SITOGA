@@ -1,0 +1,25 @@
+# Ignore all .h5 files
+*.h5
+
+# Common Python ignore patterns
+__pycache__/
+*.pyc
+*.pyo
+*.py[cod]
+*$py.class
+venv/
+env/
+
+
+# Ignore IDE-specific files
+.vscode/
+.idea/
+
+# Ignore log files and other generated files
+*.log
+*.bak
+*.tmp
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
