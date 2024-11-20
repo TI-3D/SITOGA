@@ -57,6 +57,7 @@ class _LibraryPageState extends State<LibraryPage> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      color: Colors.black, // Latar belakang hitam
       padding: EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -111,9 +112,9 @@ class _LibraryPageState extends State<LibraryPage> {
             child: GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                mainAxisSpacing: 5,
-                crossAxisSpacing: 5,
-                childAspectRatio: 1,
+                mainAxisSpacing: 8,
+                crossAxisSpacing: 8,
+                childAspectRatio: 0.8, // Sedikit diperpendek
               ),
               itemCount: displayedPlants.length,
               itemBuilder: (context, index) {
@@ -158,19 +159,18 @@ class PlantCard extends StatelessWidget {
           },
           child: Container(
             width: MediaQuery.of(context).size.width * 0.4,
-            height: 150,
+            height: 140, // Lebih pendek
             decoration: BoxDecoration(
               color: Colors.grey[850],
               borderRadius: BorderRadius.circular(10),
             ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
                   child: Container(
                     width: double.infinity,
-                    height: 120,
+                    height: 100, // Tinggi gambar tetap
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         image: AssetImage(imagePath),
@@ -179,21 +179,17 @@ class PlantCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                Center(
-                  child: Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-                    child: Text(
-                      name,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                    ),
+                SizedBox(height: 8), // Tambahkan jarak antara gambar dan teks
+                Text(
+                  name,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
                   ),
+                  textAlign: TextAlign.center, // Tetap di tengah
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
                 ),
               ],
             ),
