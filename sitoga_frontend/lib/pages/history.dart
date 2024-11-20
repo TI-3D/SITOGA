@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'plant_detail.dart';
 
-class FavoritePage extends StatefulWidget {
-  const FavoritePage({Key? key}) : super(key: key);
+class HistoryPage extends StatefulWidget {
+  const HistoryPage({Key? key}) : super(key: key);
 
   @override
-  _FavoritePageState createState() => _FavoritePageState();
+  _HistoryPageState createState() => _HistoryPageState();
 }
 
-class _FavoritePageState extends State<FavoritePage> {
-  final List<Map<String, dynamic>> favorites = [
+class _HistoryPageState extends State<HistoryPage> {
+  final List<Map<String, dynamic>> history = [
     {
       'name': 'Ginkgo',
       'latinName': 'Ginkgo biloba',
@@ -49,17 +49,17 @@ class _FavoritePageState extends State<FavoritePage> {
         leading: BackButton(),
         title: const Text('History'),
       ),
-      body: favorites.isEmpty
+      body: history.isEmpty
           ? const Center(
               child: Text(
-                'No Favorites Added',
+                'No history Added',
                 style: TextStyle(fontSize: 18, color: Colors.grey),
               ),
             )
           : ListView.builder(
-              itemCount: favorites.length,
+              itemCount: history.length,
               itemBuilder: (context, index) {
-                final plant = favorites[index];
+                final plant = history[index];
                 return Card(
                   margin:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -106,7 +106,7 @@ class _FavoritePageState extends State<FavoritePage> {
                       icon: const Icon(Icons.delete, color: Colors.red),
                       onPressed: () {
                         setState(() {
-                          favorites.removeAt(index);
+                          history.removeAt(index);
                         });
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
