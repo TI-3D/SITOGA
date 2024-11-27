@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'plant_detail.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class LibraryPage extends StatefulWidget {
   @override
@@ -7,23 +9,49 @@ class LibraryPage extends StatefulWidget {
 }
 
 class _LibraryPageState extends State<LibraryPage> {
-  final TextEditingController _libraryController = TextEditingController();
-  List<Map<String, String>> allPlants = [
-    {"name": "Sirih", "image": "assets/toga_sirih.jpg"},
-    {"name": "Belimbing Wuluh", "image": "assets/belimbing_wuluh.jpg"},
-    {"name": "Jeruk Nipis", "image": "assets/jeruk_nipis.jpg"},
-    {"name": "Nangka", "image": "assets/nangka.jpg"},
-  ];
-  List<Map<String, String>> displayedPlants = [];
-  List<Map<String, String>> filteredPlants = [];
+  Future<List<Map<String, dynamic>>> fetchPlants() async {
+    final response =
+        await http.get(Uri.parse('http://127.0.0.1:8000/db/plants'));
 
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
+      print(response.body);
+      return data
+          .map((plant) => {
+                "plant_name": plant["plant_name"], // Sesuaikan key ini
+                "image": plant["image_path"],
+                "description": plant["description"],
+              })
+          .toList();
+    } else {
+      print('Error: ${response.statusCode}');
+      throw Exception('Failed to load plants');
+    }
+  }
+
+  final TextEditingController _libraryController = TextEditingController();
+  List<Map<String, dynamic>> allPlants = [];
+  List<Map<String, dynamic>> displayedPlants = [];
+  List<Map<String, dynamic>> filteredPlants = [];
   bool showDropdown = false;
 
   @override
   void initState() {
     super.initState();
-    displayedPlants = allPlants;
+    _fetchAndSetPlants();
     _libraryController.addListener(_onSearchChanged);
+  }
+
+  void _fetchAndSetPlants() async {
+    try {
+      final plants = await fetchPlants();
+      setState(() {
+        allPlants = plants;
+        displayedPlants = allPlants;
+      });
+    } catch (error) {
+      print('Error fetching plants: $error');
+    }
   }
 
   @override
@@ -37,7 +65,8 @@ class _LibraryPageState extends State<LibraryPage> {
     setState(() {
       String searchQuery = _libraryController.text.toLowerCase();
       filteredPlants = allPlants
-          .where((plant) => plant["name"]!.toLowerCase().contains(searchQuery))
+          .where((plant) =>
+              (plant["plant_name"] ?? '').toLowerCase().contains(searchQuery))
           .toList();
       showDropdown = searchQuery.isNotEmpty;
     });
@@ -48,7 +77,8 @@ class _LibraryPageState extends State<LibraryPage> {
       _libraryController.text = plantName;
       displayedPlants = allPlants
           .where((plant) =>
-              plant["name"]!.toLowerCase() == plantName.toLowerCase())
+              (plant["plant_name"] ?? '').toLowerCase() ==
+              plantName.toLowerCase())
           .toList();
       showDropdown = false;
     });
@@ -93,10 +123,10 @@ class _LibraryPageState extends State<LibraryPage> {
                       final plant = filteredPlants[index];
                       return ListTile(
                         title: Text(
-                          plant["name"]!,
+                          plant["plant_name"] ?? '',
                           style: TextStyle(color: Colors.white),
                         ),
-                        onTap: () => _selectPlant(plant["name"]!),
+                        onTap: () => _selectPlant(plant["plant_name"] ?? ''),
                       );
                     },
                     shrinkWrap: true,
@@ -119,8 +149,8 @@ class _LibraryPageState extends State<LibraryPage> {
               itemBuilder: (context, index) {
                 final plant = displayedPlants[index];
                 return PlantCard(
-                  name: plant["name"]!,
-                  imagePath: plant["image"]!,
+                  name: plant["plant_name"] ?? '',
+                  imagePath: plant["image"] ?? '',
                 );
               },
             ),
@@ -173,7 +203,10 @@ class PlantCard extends StatelessWidget {
                     height: 120,
                     decoration: BoxDecoration(
                       image: DecorationImage(
-                        image: AssetImage(imagePath),
+                        image: imagePath.isNotEmpty
+                            ? NetworkImage(imagePath)
+                            : AssetImage('assets/placeholder.png')
+                                as ImageProvider,
                         fit: BoxFit.cover,
                       ),
                     ),

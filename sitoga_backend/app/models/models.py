@@ -28,6 +28,7 @@ class Plants(Base):
     plant_id = Column(Integer, primary_key=True)
     plant_name = Column(String(100))
     description = Column(Text)
+    image_path = Column(Text)
 
 
 # Scanned Images
