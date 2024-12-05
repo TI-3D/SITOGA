@@ -1,5 +1,5 @@
+import jwt
 from datetime import datetime, timedelta
-from jose import JWTError, jwt
 from passlib.context import CryptContext
 from typing import Union
 from app.schemas.user_schemas import Token
@@ -34,5 +34,5 @@ def verify_token(token: str) -> Union[dict, None]:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload if payload["exp"] >= datetime.utcnow() else None
-    except JWTError:
+    except Exception as e:
         return None
