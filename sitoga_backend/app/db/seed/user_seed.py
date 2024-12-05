@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 from app.db.database import SessionLocal, Base, engine
 from app.models.models import Role, User  
-from sitoga_backend.app.schemas.user_schemas import RoleBase, UserCreate
-from sitoga_backend.app.crud.user_crud import create_role, create_user  
+# from sitoga_backend.app.schemas.user_schemas import RoleBase, UserCreate
+# from sitoga_backend.app.crud.user_crud import create_role, create_user  
 import bcrypt  
 from datetime import datetime
 
@@ -22,7 +22,7 @@ def hash_password(password: str) -> str:
     hashed_password = bcrypt.hashpw(password.encode(), salt)
     return hashed_password.decode()
 
-def seed_data(db: Session):
+def seed_role_and_user(db: Session):
 
     # Menambahkan roles
     for role in roles:
@@ -37,13 +37,3 @@ def seed_data(db: Session):
         db.add(db_user)
 
     db.commit()
-
-if __name__ == "__main__":
-    db = SessionLocal()
-    try:
-        seed_data(db)
-        print("Database seeded successfully!")
-    except Exception as e:
-        print(f"Error while seeding: {e}")
-    finally:
-        db.close()
