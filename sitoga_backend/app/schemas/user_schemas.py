@@ -37,6 +37,7 @@ class Token(BaseModel):
 class PlantBase(BaseModel):
     plant_name: str
     description: str
+    image_path: str
 
 class Plant(PlantBase):
     plant_id: int

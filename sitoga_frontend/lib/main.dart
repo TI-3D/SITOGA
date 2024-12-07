@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
       title: 'SITOGA',
       theme: ThemeData.dark(),
       debugShowCheckedModeBanner: false,
-      initialRoute: '/',
+      initialRoute: '/home',
       routes: {
         '/': (context) => LoginPage(),
         '/signup': (context) => SignupPage(),
