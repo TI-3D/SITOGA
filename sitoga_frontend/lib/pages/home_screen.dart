@@ -11,114 +11,120 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.black, // Mengatur warna latar belakang jika diperlukan
-      child: ListView(
-        children: [
-          // Background image with transparency
-          Stack(
-            children: [
-              // Background image starts from the top and extends just below "Hi Abby"
-              Container(
-                height:
-                    300, // Adjust this height to cover from "Hi Abby" to above the first card
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage(
-                        "assets/nangka.jpg"), // Gambar latar belakang
-                    fit: BoxFit.cover,
-                    colorFilter: ColorFilter.mode(
-                        Colors.black.withOpacity(0.6),
-                        BlendMode
-                            .darken), // Menambahkan transparansi dan menggelapkan gambar
+    return Scaffold(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color(0XFF72BF78), // Green top
+              Color(0XFFA0D683), // Green middle
+              Color(0XFFF1F8E8), // Green bottom
+            ],
+            stops: [0.01, 0.1, 1.0],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        padding: EdgeInsets.all(16.0),
+        child: ListView(
+          children: [
+            // Background image with transparency
+            Stack(
+              children: [
+                // Background image starts from the top and extends just below "Hi Abby"
+                Container(
+                  height: 300,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage("assets/nangka.jpg"),
+                      fit: BoxFit.cover,
+                      colorFilter: ColorFilter.mode(
+                          Colors.black.withOpacity(0.4),
+                          BlendMode.darken),
+                    ),
                   ),
                 ),
+                // Title placed just over the background image
+                Positioned(
+                  top: 250,
+                  left: 16,
+                  child: Text(
+                    "Pemindaian Terakhir",
+                    style: TextStyle(
+                        color: Colors.white, // Keep white text color for this title
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 10),
+            Container(
+              height: 80,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: <Widget>[
+                  plantInfoCard1(context, "Jambu Biji", "assets/jambu_biji.jpg"),
+                  plantInfoCard1(context, "Sirih", "assets/toga_sirih.jpg"),
+                ],
               ),
-              // Title placed just over the background image
-              Positioned(
-                top: 250, // Posisi judul di bawah gambar latar
-                left: 16,
-                child: Text(
-                  "Pemindaian Terakhir",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold),
-                ),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
+              child: Text(
+                "Pilihan Hari Ini",
+                style: TextStyle(
+                    color: Color(0XFF1A5319), // Green text for this title
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold),
               ),
-            ],
-          ),
-
-          SizedBox(height: 10),
-          Container(
-            height: 80,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: <Widget>[
-                plantInfoCard1(context, "Jambu Biji", "assets/jambu_biji.jpg"),
-                plantInfoCard1(context, "Sirih", "assets/toga_sirih.jpg"),
-              ],
             ),
-          ),
-
-          // Today's Choices Section (Two cards side by side)
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
-            child: Text(
-              "Pilihan Hari Ini",
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold),
+            Container(
+              height: 280,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: plantInfoCard2(context, "Jambu Biji",
+                        "jambu biji adalah", "assets/jambu_biji.jpg"),
+                  ),
+                  SizedBox(width: 0),
+                  Expanded(
+                    child: plantInfoCard2(context, "Sirih", "sirih adalah",
+                        "assets/toga_sirih.jpg"),
+                  ),
+                ],
+              ),
             ),
-          ),
-          Container(
-            height: 280,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: plantInfoCard2(context, "Jambu Biji",
-                      "jambu biji adalah", "assets/jambu_biji.jpg"),
-                ),
-                SizedBox(width: 0),
-                Expanded(
-                  child: plantInfoCard2(context, "Sirih", "sirih adalah",
-                      "assets/toga_sirih.jpg"),
-                ),
-              ],
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
+              child: Text(
+                "Tanaman Favorit",
+                style: TextStyle(
+                    color: Color(0XFF1A5319), // Green text for this title
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold),
+              ),
             ),
-          ),
-
-          // Favorite Plants Section (Two cards side by side)
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
-            child: Text(
-              "Tanaman Favorit",
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold),
+            Container(
+              height: 280,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: plantInfoCard2(context, "Jambu Biji",
+                        "jambu biji adalah", "assets/jambu_biji.jpg"),
+                  ),
+                  SizedBox(width: 0),
+                  Expanded(
+                    child: plantInfoCard2(context, "Sirih", "sirih adalah",
+                        "assets/toga_sirih.jpg"),
+                  ),
+                ],
+              ),
             ),
-          ),
-          Container(
-            height: 280,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: plantInfoCard2(context, "Jambu Biji",
-                      "jambu biji adalah", "assets/jambu_biji.jpg"),
-                ),
-                SizedBox(width: 0),
-                Expanded(
-                  child: plantInfoCard2(context, "Sirih", "sirih adalah",
-                      "assets/toga_sirih.jpg"),
-                ),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -140,8 +146,9 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Container(
             width: MediaQuery.of(context).size.width * 0.5,
             decoration: BoxDecoration(
-              color: Colors.grey[850],
+              color: Color(0XFFDFF5D8), // Updated to match profile card colors
               borderRadius: BorderRadius.circular(8),
+              boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.5), spreadRadius: 1, blurRadius: 5)],
             ),
             child: Row(
               children: [
@@ -165,7 +172,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       Text(
                         name,
                         style: TextStyle(
-                          color: Colors.white,
+                          color: Color(0XFF1A5319), // Green text for plant name
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
                         ),
@@ -202,8 +209,9 @@ class _HomeScreenState extends State<HomeScreen> {
             width: MediaQuery.of(context).size.width * 0.45,
             height: 280,
             decoration: BoxDecoration(
-              color: Colors.grey[850],
+              color: Color(0XFFDFF5D8), // Updated to match profile card colors
               borderRadius: BorderRadius.circular(10),
+              boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.5), spreadRadius: 1, blurRadius: 5)],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -229,7 +237,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Text(
                     name,
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Color(0XFF1A5319), // Green text for plant name
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -243,7 +251,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Text(
                     description,
                     style: TextStyle(
-                      color: Colors.white70,
+                      color: Colors.grey[700], // Lighter text color for description
                       fontSize: 14,
                     ),
                     overflow: TextOverflow.ellipsis,
