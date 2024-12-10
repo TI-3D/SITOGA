@@ -23,8 +23,8 @@ class PlantDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black.withOpacity(0.8),
         title: Text('Know about Plants'),
+        backgroundColor: Color(0XFF72BF78),
         centerTitle: true,
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
@@ -35,20 +35,21 @@ class PlantDetailPage extends StatelessWidget {
       ),
       body: Stack(
         children: [
-          // Background gambar tanaman dengan overlay semi-transparan
+          // Background dengan gradient
           Positioned.fill(
-            child: Stack(
-              children: [
-                Image.asset(
-                  plantImage,
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                  height: MediaQuery.of(context).size.height * 0.25,
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Color(0XFF72BF78), // Hijau atas
+                    Color(0XFFFA0D683), // Hijau bawah
+                    Color(0XFFF1F8E8),  // Warna latar belakang bawah
+                  ],
+                  stops: [0.01, 0.1, 1.0],
+                  begin: Alignment.topCenter,
+                  end: Alignment.center,
                 ),
-                Container(
-                  color: Colors.black.withOpacity(0.6), // Overlay semi-transparan
-                ),
-              ],
+              ),
             ),
           ),
           // Konten di atas background
@@ -78,7 +79,7 @@ class PlantDetailPage extends StatelessWidget {
                   Text(
                     plantName,
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Color(0XFF1A5319), // Warna teks hijau
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
                     ),
@@ -87,7 +88,7 @@ class PlantDetailPage extends StatelessWidget {
                   Text(
                     latinName,
                     style: TextStyle(
-                      color: Colors.white70,
+                      color: Color(0XFF1A5319), // Warna teks hijau
                       fontSize: 18,
                       fontStyle: FontStyle.italic,
                     ),
@@ -100,7 +101,7 @@ class PlantDetailPage extends StatelessWidget {
                       description,
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        color: Colors.white,
+                        color: Color(0XFF1A5319), // Warna teks hijau
                         fontSize: 16,
                       ),
                     ),
@@ -115,7 +116,7 @@ class PlantDetailPage extends StatelessWidget {
                         Text(
                           'Manfaat',
                           style: TextStyle(
-                            color: Colors.white,
+                            color: Color(0XFF1A5319), // Warna teks hijau
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
@@ -132,7 +133,7 @@ class PlantDetailPage extends StatelessWidget {
                                 child: Text(
                                   benefit,
                                   style: TextStyle(
-                                    color: Colors.white,
+                                    color: Color(0XFF1A5319), // Warna teks hijau
                                     fontSize: 16,
                                   ),
                                 ),
