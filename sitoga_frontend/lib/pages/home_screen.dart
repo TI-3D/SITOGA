@@ -31,32 +31,45 @@ class _HomeScreenState extends State<HomeScreen> {
             // Background image with transparency
             Stack(
               children: [
-                // Background image starts from the top and extends just below "Hi Abby"
                 Container(
-                  height: 300,
+                // Background image starts from the top and extends just below "Hi Abby"
+                  height: 150,
+                  // width: double.infinity,
                   decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
                     image: DecorationImage(
                       image: AssetImage("assets/nangka.jpg"),
                       fit: BoxFit.cover,
                       colorFilter: ColorFilter.mode(
-                          Colors.black.withOpacity(0.4),
+                          Colors.black.withOpacity(0.7),
                           BlendMode.darken),
                     ),
                   ),
                 ),
-                // Title placed just over the background image
                 Positioned(
-                  top: 250,
+                  top: 16,
                   left: 16,
                   child: Text(
-                    "Pemindaian Terakhir",
+                    "Hi Guest",
                     style: TextStyle(
-                        color: Colors.white, // Keep white text color for this title
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold),
+                      color: Colors.white, // White text for "Hi Guest"
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],
+            ),
+            SizedBox(height: 10),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
+              child: Text(
+                "Pemindaian terakhir",
+                style: TextStyle(
+                    color: Color(0XFF1A5319), // Green text for this title
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold),
+              ),
             ),
             SizedBox(height: 10),
             Container(
@@ -88,7 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: plantInfoCard2(context, "Jambu Biji",
                         "jambu biji adalah", "assets/jambu_biji.jpg"),
                   ),
-                  SizedBox(width: 0),
+                  SizedBox(width: 8),
                   Expanded(
                     child: plantInfoCard2(context, "Sirih", "sirih adalah",
                         "assets/toga_sirih.jpg"),
@@ -115,7 +128,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: plantInfoCard2(context, "Jambu Biji",
                         "jambu biji adalah", "assets/jambu_biji.jpg"),
                   ),
-                  SizedBox(width: 0),
+                  SizedBox(width: 8),
                   Expanded(
                     child: plantInfoCard2(context, "Sirih", "sirih adalah",
                         "assets/toga_sirih.jpg"),

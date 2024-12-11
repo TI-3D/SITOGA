@@ -44,19 +44,19 @@ class _ProfilePageState extends State<ProfilePage> {
               'User@gmail.com',
               style: TextStyle(color: Colors.grey, fontSize: 14),
             ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                // Edit profile action
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0XFF1A5319),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              ),
-              child: Text('Edit Profile', style: TextStyle(color: Colors.white)),
-            ),
+            // SizedBox(height: 20),
+            // ElevatedButton(
+            //   onPressed: () {
+            //     // Edit profile action
+            //   },
+            //   style: ElevatedButton.styleFrom(
+            //     backgroundColor: Color(0XFF1A5319),
+            //     shape: RoundedRectangleBorder(
+            //       borderRadius: BorderRadius.circular(20),
+            //     ),
+            //   ),
+            //   child: Text('Edit Profile', style: TextStyle(color: Colors.white)),
+            // ),
             SizedBox(height: 30),
             // Feature list
             Expanded(

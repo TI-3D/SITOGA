@@ -169,7 +169,7 @@ class _RecipePageState extends State<RecipePage> {
                   crossAxisCount: 2,
                   mainAxisSpacing: 5,
                   crossAxisSpacing: 5,
-                  childAspectRatio: 0.6,
+                  childAspectRatio: 0.75,
                 ),
                 itemCount: displayedRecipe.length,
                 itemBuilder: (context, index) {
