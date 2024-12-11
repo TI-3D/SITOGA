@@ -159,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Container(
             width: MediaQuery.of(context).size.width * 0.5,
             decoration: BoxDecoration(
-              color: Color(0XFFDFF5D8), // Updated to match profile card colors
+              color: Colors.white, // Updated to match profile card colors
               borderRadius: BorderRadius.circular(8),
               boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.5), spreadRadius: 1, blurRadius: 5)],
             ),
@@ -222,7 +222,7 @@ class _HomeScreenState extends State<HomeScreen> {
             width: MediaQuery.of(context).size.width * 0.45,
             height: 280,
             decoration: BoxDecoration(
-              color: Color(0XFFDFF5D8), // Updated to match profile card colors
+              color: Colors.white, // Updated to match profile card colors
               borderRadius: BorderRadius.circular(10),
               boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.5), spreadRadius: 1, blurRadius: 5)],
             ),
