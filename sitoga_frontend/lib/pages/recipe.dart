@@ -58,11 +58,20 @@ class _RecipePageState extends State<RecipePage> {
   void _onSearchChanged() {
     setState(() {
       String searchQuery = _RecipeController.text.toLowerCase();
-      filteredRecipe = allRecipe
-          .where(
-              (recipe) => recipe["name"]!.toLowerCase().contains(searchQuery))
-          .toList();
-      showDropdown = searchQuery.isNotEmpty;
+
+      if (searchQuery.isEmpty) {
+        // Jika kolom pencarian kosong, tampilkan semua tanaman
+        displayedRecipe = allRecipe;
+        showDropdown = false;
+      } else {
+        // Jika ada teks pencarian, filter berdasarkan nama tanaman
+        filteredRecipe = allRecipe
+            .where((recipe) =>
+                (recipe["name"] ?? '').toLowerCase().contains(searchQuery))
+            .toList();
+        displayedRecipe = filteredRecipe;
+        showDropdown = true;
+      }
     });
   }
 
@@ -192,8 +201,16 @@ class _RecipePageState extends State<RecipePage> {
                     child: Container(
                       margin: EdgeInsets.all(8.0),
                       decoration: BoxDecoration(
-                        color: Color(0XFFDFF5D8),
+                        color: Colors.white,
                         borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2), // Warna shadow
+                            spreadRadius: 2, // Jarak sebar shadow
+                            blurRadius: 8, // Blur effect
+                            offset: Offset(0, 4), // Posisi shadow
+                          ),
+                        ],
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
