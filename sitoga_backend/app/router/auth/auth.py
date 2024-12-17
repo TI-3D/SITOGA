@@ -21,7 +21,8 @@ def login_user(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = D
     return {
         "message": "Login berhasil",
         "access_token": access_token,
-        "token_type": "bearer"
+        "token_type": "bearer",
+        "user_id": db_user.user_id,
     }
     
 @router.post("/register", response_model=User)

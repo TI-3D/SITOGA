@@ -1,9 +1,10 @@
 from sqlalchemy import create_engine, Column, Integer, String, Enum, DateTime, Text, ForeignKey, func
-# from sqlalchemy.orm import relationship
-
-from ..db.database import Base, engine
+from sqlalchemy.orm import relationship
+from app.db.database import Base, engine
+from sqlalchemy.ext.declarative import declarative_base
 
 # Membuat struktur model / tabel database SITOGA_DB
+Base = declarative_base()
 
 # Role
 class Role(Base):
@@ -21,6 +22,8 @@ class User(Base):
     role_id = Column(Enum('0', '1'), ForeignKey('roles.role_id'))
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+    
+    histories = relationship("History", back_populates="user")
 
 # Plants
 class Plants(Base):
@@ -30,6 +33,9 @@ class Plants(Base):
     description = Column(Text)
     image_path = Column(Text)
 
+    # Relasi ke Favorite dan History
+    favorites = relationship("Favorite", back_populates="plant")
+    histories = relationship("History", back_populates="plant")
 
 # Scanned Images
 class ScannedImage(Base):
@@ -47,6 +53,9 @@ class Favorite(Base):
     user_id = Column(Integer, ForeignKey('users.user_id'))
     plant_id = Column(Integer, ForeignKey('plants.plant_id'))
     added_at = Column(DateTime)
+    
+    # Relasi ke Plants
+    plant = relationship("Plants", back_populates="favorites")
 
 # History
 class History(Base):
@@ -56,7 +65,12 @@ class History(Base):
     plant_id = Column(Integer, ForeignKey('plants.plant_id'))
     scan_date = Column(DateTime)
     image_url = Column(String(255))
+    
+    # Relasi ke Plants
+    plant = relationship("Plants", back_populates="histories")
 
+    # Relasi ke User
+    user = relationship("User", back_populates="histories")
 # Recipe
 class Recipe(Base):
     __tablename__ = "recipe"
