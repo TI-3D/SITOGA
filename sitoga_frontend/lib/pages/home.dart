@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:sitoga_frontend/pages/favorites.dart';
 import 'library.dart';
 import 'home_screen.dart';
 import 'scan.dart';
+import 'recipe.dart';
+import 'profile.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -15,9 +16,9 @@ class _HomePageState extends State<HomePage> {
   // Halaman yang akan dituju berdasarkan item yang dipilih
   final List<Widget> _pages = [
     HomeScreen(), // HomePage
-    FavoritePage(), // FavoritePage
     LibraryPage(), // LibraryPage
-    LibraryPage(), // RecipePage
+    RecipePage(), // RecipePage
+    ProfilePage(), // ProfilePage
   ];
 
   void _onItemTapped(int index) {
@@ -43,21 +44,21 @@ class _HomePageState extends State<HomePage> {
         break;
       case 1:
         appBar = AppBar(
-          title: const Text("Favorites"),
+          title: const Text("Library"),
           backgroundColor: Colors.black,
           automaticallyImplyLeading: false,
         );
         break;
       case 2:
         appBar = AppBar(
-          title: const Text("Library"),
+          title: const Text("Recipe"),
           backgroundColor: Colors.black,
           automaticallyImplyLeading: false,
         );
         break;
       case 3:
         appBar = AppBar(
-          title: const Text("Recipe"),
+          title: const Text("Profile"),
           backgroundColor: Colors.black,
           automaticallyImplyLeading: false,
         );
@@ -81,7 +82,6 @@ class _HomePageState extends State<HomePage> {
         onTap: _onItemTapped,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Favorites'),
           BottomNavigationBarItem(
             icon: ImageIcon(
               AssetImage("assets/icons/library_icon.png"),
@@ -94,6 +94,7 @@ class _HomePageState extends State<HomePage> {
             ),
             label: 'Recipe',
           ),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),
       floatingActionButton: FloatingActionButton(

@@ -6,6 +6,7 @@ import 'pages/plant_detail.dart';
 import 'pages/home.dart';
 import 'pages/library.dart';
 import 'pages/favorites.dart';
+import 'pages/profile.dart';
 
 void main() {
   runApp(MyApp());
@@ -27,7 +28,7 @@ class MyApp extends StatelessWidget {
         '/plantDetail': (context) => PlantDetailPage(),
         '/home': (context) => HomePage(),
         '/library': (context) => LibraryPage(),
-        '/favorite': (context) => FavoritePage(),
+        '/profile': (context) => ProfilePage(),
       },
     );
   }
