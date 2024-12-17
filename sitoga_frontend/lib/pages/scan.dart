@@ -16,7 +16,7 @@ class _CameraScannerPageState extends State<CameraScannerPage> {
   final ImagePicker _picker = ImagePicker();
   bool _isLoading = false;
   String? _errorMessage;
-  String? _predictionResult;
+  int? _predictionResult;
 
   // Colors
   final Color primaryTextColor = Color(0XFF1A5319);
@@ -105,7 +105,7 @@ class _CameraScannerPageState extends State<CameraScannerPage> {
     try {
       // Get user ID from shared preferences
       final SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? userId = prefs.getString('user_id');
+      int? userId = prefs.getInt('user_id');
 
       if (userId == null) {
         throw Exception('User not logged in');
@@ -118,7 +118,7 @@ class _CameraScannerPageState extends State<CameraScannerPage> {
       );
 
       // Add user ID to request
-      request.fields['user_id'] = userId;
+      request.fields['user_id'] = userId.toString();
 
       // Add image file to request
       request.files.add(
