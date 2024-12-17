@@ -35,7 +35,7 @@ class KelolaTanamanPage extends StatelessWidget {
         selectedIndex: 1,
         onTap: (index) {
           if (index == 0) {
-            Navigator.pushReplacementNamed(context, '/home');
+            Navigator.pushReplacementNamed(context, '/');
           } else if (index == 2) {
             Navigator.pushReplacementNamed(context, '/logout');
           }
