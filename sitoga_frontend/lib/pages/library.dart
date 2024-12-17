@@ -62,7 +62,7 @@ class _LibraryPageState extends State<LibraryPage> {
   }
 
   void _onSearchChanged() {
-     setState(() {
+    setState(() {
       String searchQuery = _libraryController.text.toLowerCase();
 
       if (searchQuery.isEmpty) {
@@ -172,6 +172,7 @@ class _LibraryPageState extends State<LibraryPage> {
                   return PlantCard(
                     name: plant["plant_name"] ?? '',
                     imagePath: plant["image"] ?? '',
+                    plantData: plant, // Pass plant data to PlantCard
                   );
                 },
               ),
@@ -186,11 +187,13 @@ class _LibraryPageState extends State<LibraryPage> {
 class PlantCard extends StatelessWidget {
   final String name;
   final String imagePath;
+  final Map<String, dynamic> plantData;
 
   const PlantCard({
     Key? key,
     required this.name,
     required this.imagePath,
+    required this.plantData,
   }) : super(key: key);
 
   @override
@@ -204,7 +207,9 @@ class PlantCard extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => PlantDetailPage(),
+                builder: (context) => PlantDetailPage(
+                  plantData: plantData, // Pass plant data to PlantDetailPage
+                ),
               ),
             );
           },
@@ -234,8 +239,7 @@ class PlantCard extends StatelessWidget {
                       image: DecorationImage(
                         image: imagePath.isNotEmpty
                             ? NetworkImage(imagePath)
-                            : AssetImage('assets/placeholder.jpg')
-                                as ImageProvider,
+                            : AssetImage('assets/placeholder.jpg') as ImageProvider,
                         fit: BoxFit.cover,
                       ),
                     ),

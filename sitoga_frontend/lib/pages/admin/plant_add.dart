@@ -75,7 +75,7 @@ class TambahTanamanPage extends StatelessWidget {
         onTap: (index) {
           // Logika navigasi
           if (index == 0) {
-            Navigator.pushNamed(context, '/home'); // Sesuaikan rute halaman utama
+            Navigator.pushNamed(context, '/'); // Sesuaikan rute halaman utama
           }
         },
       ),
