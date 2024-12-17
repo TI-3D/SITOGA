@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'plant_detail.dart';
 import 'dart:convert';
+import '../config/config.dart';
 import 'package:http/http.dart' as http;
 
 class LibraryPage extends StatefulWidget {
@@ -11,7 +12,7 @@ class LibraryPage extends StatefulWidget {
 class _LibraryPageState extends State<LibraryPage> {
   Future<List<Map<String, dynamic>>> fetchPlants() async {
     try {
-      final response = await http.get(Uri.parse('http://127.0.0.1:8000/db/plants/'));
+      final response = await http.get(Uri.parse('${AppConfig.baseUrl}/db/plants/'));
 
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);

@@ -86,12 +86,12 @@ class _HistoryPageState extends State<HistoryPage> {
                       child: ListTile(
                         leading: GestureDetector(
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => PlantDetailPage(),
-                              ),
-                            );
+                            // Navigator.push(
+                            //   context,
+                            //   MaterialPageRoute(
+                            //     builder: (context) => PlantDetailPage(),
+                            //   ),
+                            // );
                           },
                           child: Image.asset(
                             plant['image'],
@@ -102,12 +102,12 @@ class _HistoryPageState extends State<HistoryPage> {
                         ),
                         title: GestureDetector(
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => PlantDetailPage(),
-                              ),
-                            );
+                            // Navigator.push(
+                            //   context,
+                            //   MaterialPageRoute(
+                            //     builder: (context) => PlantDetailPage(),
+                            //   ),
+                            // );
                           },
                           child: Text(
                             plant['name'],
