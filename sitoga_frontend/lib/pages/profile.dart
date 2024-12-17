@@ -62,6 +62,7 @@ class _ProfilePageState extends State<ProfilePage> {
             );
           });
           return Scaffold(
+
             // appBar: AppBar(
             //   title: Text('Profile'),
             //   backgroundColor: Color(0XFF72BF78),
@@ -70,6 +71,7 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Text(
                 'Please log in to view your profile.',
                 style: TextStyle(fontSize: 18, color: Colors.white),
+
               ),
             ),
           );

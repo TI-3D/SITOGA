@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.router.user import prediction
 from app.router.globals.db import router as db_router
 from app.router.auth.auth import router as auth_router
+from app.router.user.favorites import router as favorite_router
+from app.router.user.history import router as history_router
 
 from app.db.seed import seed, user_seed, plant_seed, recipe_seed, ingredients_seed
 from app.models.models import Role, User, Plants, ScannedImage, Favorite, History, Recipe, Ingredients
@@ -34,6 +36,10 @@ async def custom_exception_handler(request: Request, exc: Exception):
 app.include_router(db_router, prefix="/db", tags=["db"])
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
 app.include_router(prediction.router, prefix="/predict", tags=["prediction"])
+
+app.include_router(history_router, prefix="/history", tags=["History"])
+app.include_router(favorite_router, prefix="/favorite", tags=["Favorites"])
+
 
 # Seeder
 @app.on_event("startup")
