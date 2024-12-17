@@ -36,8 +36,10 @@ async def custom_exception_handler(request: Request, exc: Exception):
 app.include_router(db_router, prefix="/db", tags=["db"])
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
 app.include_router(prediction.router, prefix="/predict", tags=["prediction"])
+
 app.include_router(history_router, prefix="/history", tags=["History"])
 app.include_router(favorite_router, prefix="/favorite", tags=["Favorites"])
+
 
 # Seeder
 @app.on_event("startup")
