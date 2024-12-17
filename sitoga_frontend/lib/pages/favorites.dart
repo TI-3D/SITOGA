@@ -87,12 +87,12 @@ class _FavoritePageState extends State<FavoritePage> {
                       child: ListTile(
                         leading: GestureDetector(
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => PlantDetailPage(),
-                              ),
-                            );
+                            // Navigator.push(
+                            //   context,
+                            //   MaterialPageRoute(
+                            //     builder: (context) => PlantDetailPage(),
+                            //   ),
+                            // );
                           },
                           child: Image.asset(
                             plant['image'],
@@ -103,12 +103,12 @@ class _FavoritePageState extends State<FavoritePage> {
                         ),
                         title: GestureDetector(
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => PlantDetailPage(),
-                              ),
-                            );
+                            // Navigator.push(
+                            //   context,
+                            //   MaterialPageRoute(
+                            //     builder: (context) => PlantDetailPage(),
+                            //   ),
+                            // );
                           },
                           child: Text(
                             plant['name'],

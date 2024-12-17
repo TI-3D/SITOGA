@@ -32,6 +32,7 @@ class Token(BaseModel):
     access_token: str
     token_type: str
     message: str
+    user_id: int
     
 # Plants Schema
 class PlantBase(BaseModel):

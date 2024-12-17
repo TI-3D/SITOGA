@@ -1,278 +1,331 @@
-// import 'package:camera/camera.dart';
-// import 'package:flutter/material.dart';
-
-// class CameraScannerPage extends StatefulWidget {
-//   @override
-//   _CameraScannerPageState createState() => _CameraScannerPageState();
-// }
-
-// class _CameraScannerPageState extends State<CameraScannerPage>
-//     with SingleTickerProviderStateMixin {
-//   late CameraController _cameraController;
-//   bool _isCameraInitialized = false;
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     _initializeCamera();
-//   }
-
-//   Future<void> _initializeCamera() async {
-//     final cameras = await availableCameras();
-//     final firstCamera = cameras.first;
-//     _cameraController = CameraController(
-//       firstCamera,
-//       ResolutionPreset.high,
-//     );
-
-//     await _cameraController.initialize();
-
-//     setState(() {
-//       _isCameraInitialized = true;
-//     });
-//   }
-
-//   @override
-//   void dispose() {
-//     _cameraController.dispose();
-//     super.dispose();
-//   }
-
-//   Future<void> _takePicture() async {
-//     try {
-//       final image = await _cameraController.takePicture();
-//       print("Image taken: ${image.path}");
-//       // Tambahkan logika untuk menyimpan atau menampilkan foto di sini.
-//     } catch (e) {
-//       print("Error while taking picture: $e");
-//     }
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: Stack(
-//         children: [
-//           // Tampilan kamera
-//           if (_isCameraInitialized)
-//             Positioned.fill(
-//               child: CameraPreview(_cameraController),
-//             )
-//           else
-//             Center(child: CircularProgressIndicator()),
-
-//           // Teks "Scanner" dan tombol kembali di bagian atas layar
-//           Positioned(
-//             top: 40,
-//             left: 0,
-//             right: 0,
-//             child: Row(
-//               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//               children: [
-//                 IconButton(
-//                   icon: Icon(Icons.arrow_back, color: Colors.white),
-//                   onPressed: () {
-//                     Navigator.pop(context);
-//                   },
-//                 ),
-//                 Text(
-//                   'Scanner',
-//                   style: TextStyle(
-//                     color: Colors.white,
-//                     fontSize: 28,
-//                     fontWeight: FontWeight.bold,
-//                   ),
-//                 ),
-//                 SizedBox(width: 48), // Placeholder for the back button
-//               ],
-//             ),
-//           ),
-
-//           // Bingkai melengkung di sekitar area kamera (tidak menyertakan seluruh area)
-//           Center(
-//             child: Container(
-//               width: MediaQuery.of(context).size.width * 0.8,
-//               height: MediaQuery.of(context).size.height * 0.5,
-//               decoration: BoxDecoration(
-//                 border: Border.all(color: Colors.white, width: 3),
-//                 borderRadius: BorderRadius.circular(20),
-//               ),
-//             ),
-//           ),
-
-//           // Tombol Capture di bagian bawah
-//           Positioned(
-//             bottom: 50,
-//             left: 0,
-//             right: 0,
-//             child: Center(
-//               child: ElevatedButton(
-//                 onPressed: _takePicture,
-//                 style: ElevatedButton.styleFrom(
-//                   shape: CircleBorder(),
-//                   padding: EdgeInsets.all(20),
-//                   backgroundColor: Colors.green,
-//                 ),
-//                 child: Icon(
-//                   Icons.camera_alt,
-//                   color: Colors.white,
-//                   size: 30,
-//                 ),
-//               ),
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
+import 'dart:io';
+import 'dart:convert';
+import '../config/config.dart';
 
 class CameraScannerPage extends StatefulWidget {
   @override
   _CameraScannerPageState createState() => _CameraScannerPageState();
 }
 
-class _CameraScannerPageState extends State<CameraScannerPage>
-    with SingleTickerProviderStateMixin {
-  late CameraController _cameraController;
-  late final ImagePicker _picker = ImagePicker();
-  bool _isCameraInitialized = false;
-  String _selectedOption = "Camera"; // Default option
+class _CameraScannerPageState extends State<CameraScannerPage> {
+  File? _imageFile;
+  final ImagePicker _picker = ImagePicker();
+  bool _isLoading = false;
+  String? _errorMessage;
+  String? _predictionResult;
+
+  // Colors
+  final Color primaryTextColor = Color(0XFF1A5319);
+  final Color buttonGreen = Color(0XFF72BF78);
+  final Color lightGreen = Color(0XFFF1F8E8);
+  final Color mediumGreen = Color(0XFFA0D683);
 
   @override
   void initState() {
     super.initState();
-    _initializeCamera();
+    _checkLoginStatus();
   }
 
-  Future<void> _initializeCamera() async {
-    final cameras = await availableCameras();
-    final firstCamera = cameras.first;
-    _cameraController = CameraController(
-      firstCamera,
-      ResolutionPreset.high,
-    );
+  Future<void> _checkLoginStatus() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? username = prefs.getString('username');
 
-    await _cameraController.initialize();
-
-    setState(() {
-      _isCameraInitialized = true;
-    });
+    if (username == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Login Required'),
+              content: Text('Please log in to use this feature.'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                  },
+                  child: Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.pushReplacementNamed(context, '/login');
+                  },
+                  child: Text('Login'),
+                ),
+              ],
+            );
+          },
+        );
+      });
+    }
   }
 
-  @override
-  void dispose() {
-    _cameraController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _takePicture() async {
-    try {
-      final image = await _cameraController.takePicture();
-      print("Image taken: ${image.path}");
-      // Add logic to process or display the captured image
-    } catch (e) {
-      print("Error while taking picture: $e");
+  Future<void> _getImageFromCamera() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.camera);
+    if (pickedFile != null) {
+      setState(() {
+        _imageFile = File(pickedFile.path);
+        _predictionResult = null;
+        _errorMessage = null;
+      });
     }
   }
 
   Future<void> _getImageFromGallery() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
-      // Add logic to process or display the uploaded image from gallery
-      print("Image selected from gallery: ${pickedFile.path}");
+      setState(() {
+        _imageFile = File(pickedFile.path);
+        _predictionResult = null;
+        _errorMessage = null;
+      });
     }
   }
 
-  void _handleOptionChange(String value) {
+  Future<void> _predictImage() async {
+    if (_imageFile == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please select an image first')),
+      );
+      return;
+    }
+
     setState(() {
-      _selectedOption = value;
+      _isLoading = true;
+      _errorMessage = null;
+      _predictionResult = null;
     });
+
+    try {
+      // Get user ID from shared preferences
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? userId = prefs.getString('user_id');
+
+      if (userId == null) {
+        throw Exception('User not logged in');
+      }
+
+      // Create multipart request
+      var request = http.MultipartRequest(
+        'POST', 
+        Uri.parse('${AppConfig.baseUrl}/predict/predict')
+      );
+
+      // Add user ID to request
+      request.fields['user_id'] = userId;
+
+      // Add image file to request
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'image', 
+          _imageFile!.path
+        )
+      );
+
+      // Send the request
+      var response = await request.send();
+
+      // Read and handle the response
+      var responseBody = await response.stream.bytesToString();
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (response.statusCode == 200) {
+        // Parse the JSON response
+        var jsonResponse = json.decode(responseBody);
+        setState(() {
+          _predictionResult = jsonResponse['prediction'] ?? 'No prediction available';
+        });
+      } else {
+        throw Exception('Failed to predict image: ${response.statusCode}');
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'Error: ${e.toString()}';
+      });
+    }
+  }
+
+  Widget _buildScanButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onPressed,
+  }) {
+    return ElevatedButton.icon(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: buttonGreen,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+      ),
+      onPressed: onPressed,
+      icon: Icon(icon, color: Colors.white),
+      label: Text(
+        label,
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Center(child: Text("Scanner")),
+        title: const Text("Scan Image"),
+        backgroundColor: buttonGreen,
+        titleTextStyle: TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+          fontSize: 20,
+        ),
       ),
-      body: Column(
-        children: [
-          // Segmented Control to switch between Camera and Gallery
-          Container(
-            padding: EdgeInsets.all(16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: () => _handleOptionChange("Camera"),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: _selectedOption == "Camera" ? Colors.green : Colors.grey,
-                  ),
-                  child: Text("Camera"),
-                ),
-                SizedBox(width: 16.0),
-                ElevatedButton(
-                  onPressed: () => _handleOptionChange("Gallery"),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: _selectedOption == "Gallery" ? Colors.green : Colors.grey,
-                  ),
-                  child: Text("Gallery"),
-                ),
-              ],
-            ),
+      body: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              buttonGreen,
+              mediumGreen,
+              lightGreen,
+            ],
+            stops: [0.01, 0.1, 1.0],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
           ),
-
-          // Tampilan kamera (conditionally shown)
-          if (_selectedOption == "Camera" && _isCameraInitialized)
-            Expanded(
-              child: CameraPreview(_cameraController),
-            ),
-
-          // Center progress indicator while initializing camera
-          if (!_isCameraInitialized)
-            Center(child: CircularProgressIndicator()),
-
-          // Tombol Capture (conditionally shown)
-          if (_selectedOption == "Camera")
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ElevatedButton(
-                onPressed: _takePicture,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (_imageFile != null)
+                Container(
+                  height: 200,
+                  margin: const EdgeInsets.only(bottom: 20),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 10,
+                        offset: Offset(0, 5),
+                      ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: Image.file(
+                      _imageFile!,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                )
+              else
+                Container(
+                  height: 200,
+                  margin: const EdgeInsets.only(bottom: 20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(
+                      color: mediumGreen,
+                      width: 1,
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'No image selected',
+                      style: TextStyle(
+                        color: primaryTextColor,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildScanButton(
+                      icon: Icons.camera_alt,
+                      label: 'Camera',
+                      onPressed: _getImageFromCamera,
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: _buildScanButton(
+                      icon: Icons.photo_library,
+                      label: 'Gallery',
+                      onPressed: _getImageFromGallery,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 20),
+              // Predict button with loading and error handling
+              ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  shape: CircleBorder(),
-                  padding: EdgeInsets.all(20),
-                  backgroundColor: Colors.green,
-                ),
-                child: Icon(
-                  Icons.camera_alt,
-                  color: Colors.white,
-                  size: 30,
-                ),
-              ),
-            ),
-
-          // Logika untuk memilih gambar dari galeri jika dipilih
-          if (_selectedOption == "Gallery")
-            Expanded(
-              child: Center(
-                child: ElevatedButton(
-                  onPressed: _getImageFromGallery,
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.all(15),
-                    backgroundColor: Colors.blue,
+                  backgroundColor: buttonGreen,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                ),
+                onPressed: _isLoading ? null : _predictImage,
+                child: _isLoading 
+                  ? CircularProgressIndicator(color: Colors.white)
+                  : Text(
+                      'Predict',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+              ),
+              
+              // Display prediction result or error
+              if (_errorMessage != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 20),
                   child: Text(
-                    "Select Image from Gallery",
-                    style: TextStyle(color: Colors.white),
+                    _errorMessage!,
+                    style: TextStyle(color: Colors.red, fontSize: 16),
+                    textAlign: TextAlign.center,
                   ),
                 ),
-              ),
-            ),
-        ],
+              if (_predictionResult != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: Text(
+                    'Prediction: $_predictionResult',
+                    style: TextStyle(
+                      color: primaryTextColor,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }

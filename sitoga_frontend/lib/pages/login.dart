@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../pages/forgot_password.dart';
+import '../config/config.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -15,7 +16,7 @@ class _LoginPageState extends State<LoginPage> {
 
   // Fungsi untuk login ke server
   Future<void> login(String username, String password) async {
-    final url = Uri.parse('http://127.0.0.1:8000/auth/login'); // URL backend
+    final url = Uri.parse('${AppConfig.baseUrl}/auth/login'); // URL backend
 
     final response = await http.post(
       url,
@@ -34,12 +35,12 @@ class _LoginPageState extends State<LoginPage> {
       // Simpan nama pengguna dan password ke sesi lokal (Shared Preferences)
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('username', username);
-      await prefs.setString('password', password);
+      await prefs.setInt('user_id', data['user_id']);
       await prefs.setString('token', data['access_token']);
 
       print('Login berhasil! Token: ${data['access_token']}');
       print('Username: ${prefs.getString('username')}');
-      print('Password: ${prefs.getString('password')}');
+      print('User ID: ${prefs.getInt('user_id')}');
 
       // Navigasi ke halaman utama
       Navigator.pushReplacementNamed(context, '/');
