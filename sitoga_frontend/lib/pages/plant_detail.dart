@@ -11,7 +11,7 @@ class PlantDetailPage extends StatelessWidget {
 
     String latinName = plantData['latin_name'] ?? 'SITOGA';
     String description = plantData['description'] ?? 'Tidak ada deskripsi tersedia.';
-    String plantImage = plantData['image'] ?? 'assets/placeholder.jpg'; 
+    String plantImage = plantData['image_path'] ?? 'assets/placeholder.jpg'; 
     List<String> benefits = plantData['benefits'] ?? []; 
 
 
