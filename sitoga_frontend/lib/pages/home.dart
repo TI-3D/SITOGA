@@ -13,16 +13,14 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
-  // Halaman yang akan dituju berdasarkan item yang dipilih
   final List<Widget> _pages = [
-    HomeScreen(), // HomePage
-    LibraryPage(), // LibraryPage
-    RecipePage(), // RecipePage
-    ProfilePage(), // ProfilePage
+    HomeScreen(),
+    LibraryPage(),
+    RecipePage(),
+    ProfilePage(),
   ];
 
   void _onItemTapped(int index) {
-    // Navigasi ke halaman yang sesuai
     if (index != _selectedIndex) {
       setState(() {
         _selectedIndex = index;
@@ -38,29 +36,49 @@ class _HomePageState extends State<HomePage> {
       case 0:
         appBar = AppBar(
           title: const Text("Home"),
-          backgroundColor: Colors.black,
+          backgroundColor: Color(0XFF72BF78),
           automaticallyImplyLeading: false,
+          titleTextStyle: TextStyle(
+            color: Color(0XFF1A5319),
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),
         );
         break;
       case 1:
         appBar = AppBar(
           title: const Text("Library"),
-          backgroundColor: Colors.black,
+          backgroundColor: Color(0XFF72BF78),
           automaticallyImplyLeading: false,
+          titleTextStyle: TextStyle(
+            color: Color(0XFF1A5319),
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),
         );
         break;
       case 2:
         appBar = AppBar(
           title: const Text("Recipe"),
-          backgroundColor: Colors.black,
+          backgroundColor: Color(0XFF72BF78),
           automaticallyImplyLeading: false,
+          titleTextStyle: TextStyle(
+            color: Color(0XFF1A5319),
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),
         );
         break;
       case 3:
         appBar = AppBar(
           title: const Text("Profile"),
-          backgroundColor: Colors.black,
+          backgroundColor: Color(0XFF72BF78),
           automaticallyImplyLeading: false,
+          titleTextStyle: TextStyle(
+            color: Color(0XFF1A5319),
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),
         );
         break;
       default:
@@ -70,28 +88,21 @@ class _HomePageState extends State<HomePage> {
     }
 
     return Scaffold(
-      appBar: appBar, // Menampilkan AppBar yang sesuai dengan halaman
+      appBar: appBar,
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
-        backgroundColor: Colors.black,
-        selectedItemColor: Colors.green,
-        unselectedItemColor: Colors.white,
-        showUnselectedLabels: false,
+        backgroundColor: Color(0XFF72BF78),
+        selectedItemColor: Color(0XFF1A5319),
+        unselectedItemColor: Colors.white70,
+        showUnselectedLabels: true,
         type: BottomNavigationBarType.fixed,
         onTap: _onItemTapped,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.grass), label: 'Library'),
           BottomNavigationBarItem(
-            icon: ImageIcon(
-              AssetImage("assets/icons/library_icon.png"),
-            ),
-            label: 'Library',
-          ),
-          BottomNavigationBarItem(
-            icon: ImageIcon(
-              AssetImage("assets/icons/recipe_icon.png"),
-            ),
+            icon: ImageIcon(AssetImage("assets/icons/recipe_icon.png")),
             label: 'Recipe',
           ),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
@@ -104,7 +115,8 @@ class _HomePageState extends State<HomePage> {
             MaterialPageRoute(builder: (context) => CameraScannerPage()),
           );
         },
-        backgroundColor: Colors.green,
+        backgroundColor: Color(0XFF4CAF50),
+        shape: CircleBorder(),
         child: Image.asset(
           "assets/icons/scan_icon.png",
           width: 24,

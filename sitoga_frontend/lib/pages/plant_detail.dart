@@ -1,30 +1,22 @@
 import 'package:flutter/material.dart';
 
 class PlantDetailPage extends StatelessWidget {
-  final String plantName = 'Ginkgo';
-  final String latinName = 'Ginkgo biloba';
-  final String description = 'Ginkgo biloba, also known as the maidenhair tree, is a large tree with fan-shaped leaves. '
-      'It is one of the oldest living tree species in the world, dating back more than 200 million years. '
-      'It is native to China, where its seeds have been used for centuries in traditional Chinese medicine to help improve cognitive health and treat asthma, bronchitis, and kidney and bladder disorders. '
-      'Ginkgo biloba is also used as an herbal supplement extracted from ginkgo biloba tree leaves to help improve memory, brain function, and blood flow. '
-      'In ipsum diam orci morbi ultricies massa amet. Aenean urna phasellus eget '
-      'vestibulum, vulputate dui auctor sed est. Lorem ipsum dolor sit amet, consectetur '
-      'adipiscing elit. Turpis dictum egestas dolor egestas.';
-  final String plantImage = 'assets/flower.jpg';
-  final List<String> benefits = [
-    'Meningkatkan kesehatan otak',
-    'Meningkatkan sirkulasi darah',
-    'Membantu pengobatan penyakit Alzheimer',
-    'Mengurangi kecemasan dan stres',
-    'Menjaga kesehatan mata'
-  ];
+  final Map<String, dynamic> plantData;
+
+  const PlantDetailPage({Key? key, required this.plantData}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    String plantName = plantData['plant_name'] ?? 'Tanaman Tidak Diketahui';
+    String latinName = plantData['latin_name'] ?? 'SITOGA';
+    String description = plantData['description'] ?? 'Tidak ada deskripsi tersedia.';
+    String plantImage = plantData['image'] ?? 'assets/placeholder.jpg'; 
+    List<String> benefits = plantData['benefits'] ?? []; 
+
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black.withOpacity(0.8),
-        title: Text('Know about Plants'),
+        title: Text('Detail Tanaman'),
+        backgroundColor: Color(0XFF72BF78),
         centerTitle: true,
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
@@ -35,29 +27,27 @@ class PlantDetailPage extends StatelessWidget {
       ),
       body: Stack(
         children: [
-          // Background gambar tanaman dengan overlay semi-transparan
           Positioned.fill(
-            child: Stack(
-              children: [
-                Image.asset(
-                  plantImage,
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                  height: MediaQuery.of(context).size.height * 0.25,
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Color(0XFF72BF78), 
+                    Color(0XFFFA0D683), 
+                    Color(0XFFF1F8E8), 
+                  ],
+                  stops: [0.01, 0.1, 1.0],
+                  begin: Alignment.topCenter,
+                  end: Alignment.center,
                 ),
-                Container(
-                  color: Colors.black.withOpacity(0.6), // Overlay semi-transparan
-                ),
-              ],
+              ),
             ),
           ),
-          // Konten di atas background
           SafeArea(
             child: SingleChildScrollView(
               child: Column(
                 children: [
                   SizedBox(height: MediaQuery.of(context).size.height * 0.12),
-                  // Gambar tanaman di tengah halaman
                   Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12.0),
@@ -65,20 +55,27 @@ class PlantDetailPage extends StatelessWidget {
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(12.0),
-                      child: Image.asset(
-                        plantImage,
+                      child: Image.network(
+                        plantImage, 
                         width: 180,
                         height: 180,
                         fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Image.asset(
+                            'assets/placeholder.jpg', 
+                            width: 180,
+                            height: 180,
+                            fit: BoxFit.cover,
+                          );
+                        },
                       ),
                     ),
                   ),
                   SizedBox(height: 16),
-                  // Nama tanaman dan nama latin
                   Text(
                     plantName,
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Color(0XFF1A5319),
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
                     ),
@@ -87,59 +84,59 @@ class PlantDetailPage extends StatelessWidget {
                   Text(
                     latinName,
                     style: TextStyle(
-                      color: Colors.white70,
+                      color: Color(0XFF1A5319),
                       fontSize: 18,
                       fontStyle: FontStyle.italic,
                     ),
                   ),
                   SizedBox(height: 16),
-                  // Deskripsi tanaman
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Text(
                       description,
-                      textAlign: TextAlign.center,
+                      textAlign: TextAlign.justify, 
                       style: TextStyle(
-                        color: Colors.white,
+                        color: Color(0XFF1A5319),
                         fontSize: 16,
                       ),
                     ),
                   ),
                   SizedBox(height: 24),
-                  // Manfaat tanaman
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           'Manfaat',
                           style: TextStyle(
-                            color: Colors.white,
+                            color: Color(0XFF1A5319),
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         SizedBox(height: 12),
-                        // Daftar manfaat
-                        ...benefits.map((benefit) => Padding(
-                          padding: const EdgeInsets.only(bottom: 8.0),
-                          child: Row(
-                            children: [
-                              Icon(Icons.check, color: Colors.green, size: 20),
-                              SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  benefit,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
+                        if (benefits.isEmpty)
+                          Text('Tidak ada informasi manfaat untuk tanaman ini.'),
+                        for (var benefit in benefits)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: Row(
+                              children: [
+                                Icon(Icons.check, color: Colors.green, size: 20),
+                                SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    benefit,
+                                    style: TextStyle(
+                                      color: Color(0XFF1A5319),
+                                      fontSize: 16,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        )),
                       ],
                     ),
                   ),
