@@ -21,7 +21,7 @@ class _ProfilePageState extends State<ProfilePage> {
     // Hapus data sesi
     await prefs.clear();
     // Navigasikan pengguna kembali ke halaman login
-    Navigator.pushReplacementNamed(context, '/login');
+    Navigator.pushReplacementNamed(context, '/');
   }
 
   @override
@@ -52,7 +52,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     TextButton(
                       onPressed: () {
-                        Navigator.pushReplacementNamed(context, '/login');
+                        Navigator.pushReplacementNamed(context, '/');
                       },
                       child: Text('Login'),
                     ),

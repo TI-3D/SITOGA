@@ -22,6 +22,8 @@ def get_user_favorites(user_id: int, limit: Optional[int], db: Session):
             "user_id": row.user_id,
             "plant_id": row.plant_id,
             "plant_name": row.plant.plant_name,
+            "description": row.plant.description,
+            "image_path": row.plant.image_path,
             "added_at": row.added_at
         }
         for row in result

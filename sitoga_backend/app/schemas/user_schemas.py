@@ -37,7 +37,9 @@ class Token(BaseModel):
 # Plants Schema
 class PlantBase(BaseModel):
     plant_name: str
+    nama_latin: str
     description: str
+    manfaat: str
     image_path: str
 
 class Plant(PlantBase):

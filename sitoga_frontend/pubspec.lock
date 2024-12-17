@@ -121,7 +121,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.0.1"
-
   file_picker:
     dependency: "direct main"
     description:
@@ -130,7 +129,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.5.0"
-
   file_selector_linux:
     dependency: transitive
     description:
@@ -535,7 +533,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.0"
-
   win32:
     dependency: transitive
     description:
@@ -544,7 +541,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.9.0"
-
   xdg_directories:
     dependency: transitive
     description:

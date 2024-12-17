@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import '../config/config.dart';
+import 'dart:convert';
+import 'plant_detail.dart'; // Import halaman detail tanaman
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -7,37 +11,101 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String? username; // Menyimpan username pengguna
-  bool isLoading = true; // Untuk menunjukkan loading status
+  String? username;
+  int? userId; // ID pengguna untuk data favorit
+  bool isLoading = true;
+  List<Map<String, dynamic>> todayPlants = [];
+  List<Map<String, dynamic>> favoritePlants = []; // Tambahan untuk favorit
 
   @override
   void initState() {
     super.initState();
-    _checkLoginStatus(); // Periksa session login saat init
+    _checkLoginStatus();
+    _fetchTodayPlants();
   }
 
+  // Cek status login dan ambil user data
   Future<void> _checkLoginStatus() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     String? storedUsername = prefs.getString('username');
+    int? storedUserId = prefs.getInt('user_id'); // Ambil user_id
 
     setState(() {
-      username = storedUsername; // Update state username
-      isLoading = false; // Loading selesai
+      username = storedUsername;
+      userId = storedUserId;
     });
+
+    if (userId != null) {
+      _fetchFavoritePlants(); // Ambil data favorit jika login
+    }
+
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  // Ambil data tanaman hari ini
+  Future<void> _fetchTodayPlants() async {
+    try {
+      final response =
+          await http.get(Uri.parse('${AppConfig.baseUrl}/db/plants?limit=2'));
+
+      if (response.statusCode == 200) {
+        List<dynamic> data = json.decode(response.body);
+        setState(() {
+          todayPlants = List<Map<String, dynamic>>.from(data);
+        });
+      } else {
+        print('Error: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching today plants: $e');
+    }
+  }
+
+  // Ambil data tanaman favorit
+  Future<void> _fetchFavoritePlants() async {
+    if (userId == null) {
+      print("User ID tidak ditemukan.");
+      return;
+    }
+
+    try {
+      final response = await http.post(
+        Uri.parse('${AppConfig.baseUrl}/favorite/favorites'),
+        body: {'user_id': userId.toString(), 'limit': '5'},
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+
+        if (responseData['status'] == 'success') {
+          setState(() {
+            favoritePlants = List<Map<String, dynamic>>.from(responseData['data']);
+          });
+        } else {
+          print('Gagal mengambil data favorit: ${responseData['detail']}');
+        }
+      } else {
+        print('Error: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching favorite plants: $e');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: isLoading
-          ? Center(child: CircularProgressIndicator()) // Loading indikator
+          ? Center(child: CircularProgressIndicator())
           : Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    Color(0XFF72BF78), // Green top
-                    Color(0XFFA0D683), // Green middle
-                    Color(0XFFF1F8E8), // Green bottom
+                    Color(0XFF72BF78),
+                    Color(0XFFA0D683),
+                    Color(0XFFF1F8E8),
                   ],
                   stops: [0.01, 0.1, 1.0],
                   begin: Alignment.topCenter,
@@ -47,141 +115,14 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: EdgeInsets.all(16.0),
               child: ListView(
                 children: [
-                  // Background image with transparency
-                  Stack(
-                    children: [
-                      Container(
-                        height: 150,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          image: DecorationImage(
-                            image: AssetImage("assets/nangka.jpg"),
-                            fit: BoxFit.cover,
-                            colorFilter: ColorFilter.mode(
-                                Colors.black.withOpacity(0.7),
-                                BlendMode.darken),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        top: 16,
-                        left: 16,
-                        child: Text(
-                          username != null
-                              ? "Hi $username"
-                              : "Hi Guest", // Menampilkan Hi Guest atau username
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                  _buildHeader(),
                   SizedBox(height: 10),
-
-                  // Bagian Pemindaian Terakhir (hanya untuk user login)
-                  if (username != null) ...[
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 16.0, vertical: 10),
-                      child: Text(
-                        "Pemindaian terakhir",
-                        style: TextStyle(
-                          color: Color(0XFF1A5319),
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      height: 80,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: <Widget>[
-                          plantInfoCard1(context, "Jambu Biji",
-                              "assets/jambu_biji.jpg"),
-                          plantInfoCard1(context, "Sirih",
-                              "assets/toga_sirih.jpg"),
-                        ],
-                      ),
-                    ),
-                  ],
-
-                  // Pilihan Hari Ini (Selalu muncul)
-                  Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
-                    child: Text(
-                      "Pilihan Hari Ini",
-                      style: TextStyle(
-                          color: Color(0XFF1A5319),
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  Container(
-                    height: 280,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: plantInfoCard2(
-                              context,
-                              "Jambu Biji",
-                              "jambu biji adalah",
-                              "assets/jambu_biji.jpg"),
-                        ),
-                        SizedBox(width: 8),
-                        Expanded(
-                          child: plantInfoCard2(
-                              context,
-                              "Sirih",
-                              "sirih adalah",
-                              "assets/toga_sirih.jpg"),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Tanaman Favorit (hanya untuk user login)
-                  if (username != null) ...[
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 16.0, vertical: 10),
-                      child: Text(
-                        "Tanaman Favorit",
-                        style: TextStyle(
-                          color: Color(0XFF1A5319),
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      height: 280,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: plantInfoCard2(
-                                context,
-                                "Jambu Biji",
-                                "jambu biji adalah",
-                                "assets/jambu_biji.jpg"),
-                          ),
-                          SizedBox(width: 8),
-                          Expanded(
-                            child: plantInfoCard2(
-                                context,
-                                "Sirih",
-                                "sirih adalah",
-                                "assets/toga_sirih.jpg"),
-                          ),
-                        ],
-                      ),
-                    ),
+                  _buildSectionTitle("Pilihan Hari Ini"),
+                  _buildPlantList(todayPlants),
+                  if (userId != null) ...[
+                    SizedBox(height: 10),
+                    _buildSectionTitle("Tanaman Favorit Anda"),
+                    _buildPlantList(favoritePlants),
                   ],
                 ],
               ),
@@ -189,88 +130,141 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget plantInfoCard1(BuildContext context, String name, String imagePath) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8.0),
-      child: GestureDetector(
-        onTap: () {
-          // Detail tanaman
-        },
-        child: Container(
-          width: MediaQuery.of(context).size.width * 0.5,
+  Widget _buildHeader() {
+    return Stack(
+      children: [
+        Container(
+          height: 150,
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(8),
-            boxShadow: [
-              BoxShadow(
-                  color: Colors.grey.withOpacity(0.5),
-                  spreadRadius: 1,
-                  blurRadius: 5)
-            ],
+            borderRadius: BorderRadius.circular(20),
+            image: DecorationImage(
+              image: AssetImage("assets/nangka.jpg"),
+              fit: BoxFit.cover,
+              colorFilter: ColorFilter.mode(
+                  Colors.black.withOpacity(0.7), BlendMode.darken),
+            ),
           ),
-          child: Row(
-            children: [
-              Container(
-                width: 100,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage(imagePath),
-                    fit: BoxFit.cover,
-                  ),
-                  borderRadius: BorderRadius.circular(8),
-                ),
+        ),
+        Positioned(
+          top: 16,
+          left: 16,
+          child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              username != null ? "Hi $username" : "Hi Guest",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
               ),
-              SizedBox(width: 10),
-              Expanded(
+            ),
+            SizedBox(height: 60),
+            if (username == null) // Jika pengguna adalah tamu
+              InkWell(
+                onTap: () {
+                  // Navigasi ke halaman login
+                  Navigator.pushNamed(context, '/login');
+                },
                 child: Text(
-                  name,
+                  "Login",
                   style: TextStyle(
-                    color: Color(0XFF1A5319),
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    fontSize: 16,
+                    decoration: TextDecoration.underline,
                   ),
                 ),
               ),
-            ],
-          ),
+          ],
+        ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
+      child: Text(
+        title,
+        style: TextStyle(
+          color: Color(0XFF1A5319),
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
         ),
       ),
     );
   }
 
-  Widget plantInfoCard2(BuildContext context, String name, String description,
-    String imagePath) {
-  return GestureDetector(
-    onTap: () {
-      // Aksi ketika kartu ditekan
-    },
-    child: Container(
+  Widget _buildPlantList(List<Map<String, dynamic>> plants) {
+    return Container(
+      height: 280,
+      child: plants.isEmpty
+          ? Center(child: Text("Tidak ada data."))
+          : ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: plants.length,
+              itemBuilder: (context, index) {
+                final plant = plants[index];
+                return InkWell(
+                  onTap: () {
+                    // Navigasi ke halaman detail tanaman
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PlantDetailPage(
+                          plantData: plant,
+                        ),
+                      ),
+                    );
+                  },
+                  child: newPlantCard(
+                    plant['plant_name'] ?? "Tanaman",
+                    plant['description'] ?? "Deskripsi tanaman.",
+                    plant['image_path'] ?? "assets/placeholder.jpg",
+                  ),
+                );
+              },
+            ),
+    );
+  }
+
+  Widget newPlantCard(String name, String description, String imageUrl) {
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.5,
       margin: EdgeInsets.all(8.0),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
-              spreadRadius: 1,
-              blurRadius: 5)
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 1,
+            blurRadius: 5,
+          ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Gambar dengan BoxFit.cover agar proporsional
           ClipRRect(
             borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
-            child: Image.asset(
-              imagePath,
+            child: Image.network(
+              imageUrl,
               height: 120,
               width: double.infinity,
               fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Image.asset(
+                  "assets/placeholder.jpg",
+                  height: 120,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                );
+              },
             ),
           ),
           SizedBox(height: 8),
-          // Nama tanaman
           Text(
             name,
             style: TextStyle(
@@ -280,20 +274,19 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           SizedBox(height: 4),
-          // Deskripsi tanaman
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Text(
               description,
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.grey, fontSize: 14),
+              maxLines: 4,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
           SizedBox(height: 8),
         ],
       ),
-    ),
-  );
-}
-
+    );
+  }
 }

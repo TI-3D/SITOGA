@@ -18,7 +18,7 @@ class _LibraryPageState extends State<LibraryPage> {
         final List<dynamic> data = jsonDecode(response.body);
         return data.map((plant) => {
           "plant_name": plant["plant_name"],
-          "image": plant["image_path"],
+          "image_path": plant["image_path"],
           "description": plant["description"],
         }).toList();
       } else {
@@ -172,7 +172,7 @@ class _LibraryPageState extends State<LibraryPage> {
                   final plant = displayedPlants[index];
                   return PlantCard(
                     name: plant["plant_name"] ?? '',
-                    imagePath: plant["image"] ?? '',
+                    imagePath: plant["image_path"] ?? '',
                     plantData: plant, // Pass plant data to PlantCard
                   );
                 },

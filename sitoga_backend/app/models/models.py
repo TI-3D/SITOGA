@@ -30,7 +30,9 @@ class Plants(Base):
     __tablename__ = "plants"
     plant_id = Column(Integer, primary_key=True)
     plant_name = Column(String(100))
+    nama_latin = Column(String(100))
     description = Column(Text)
+    manfaat = Column(Text)
     image_path = Column(Text)
 
     # Relasi ke Favorite dan History
