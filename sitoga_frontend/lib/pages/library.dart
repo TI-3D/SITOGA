@@ -20,6 +20,9 @@ class _LibraryPageState extends State<LibraryPage> {
           "plant_name": plant["plant_name"],
           "image_path": plant["image_path"],
           "description": plant["description"],
+          "nama_latin": plant["nama_latin"],
+          "manfaat": plant["manfaat"],
+          "plant_id": plant["plant_id"],
         }).toList();
       } else {
         throw Exception('Failed to load plants, status code: ${response.statusCode}');
@@ -235,18 +238,18 @@ class PlantCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                   child: Container(
                     width: double.infinity,
-                    height: 160, // Fixed image height
+                    height: 140, // Fixed image height
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         image: imagePath.isNotEmpty
-                            ? NetworkImage(imagePath)
+                            ? AssetImage(imagePath)
                             : AssetImage('assets/placeholder.jpg') as ImageProvider,
                         fit: BoxFit.cover,
                       ),
                     ),
                   ),
                 ),
-                SizedBox(height: 25), // Added space between image and text
+                SizedBox(height: 4), // Added space between image and text
                 Text(
                   name,
                   style: TextStyle(

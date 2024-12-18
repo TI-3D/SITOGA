@@ -1,19 +1,49 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import '../config/config.dart';
 
 class PlantDetailPage extends StatelessWidget {
   final Map<String, dynamic> plantData;
 
   const PlantDetailPage({Key? key, required this.plantData}) : super(key: key);
 
+  Future<int?> getUserId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getInt('user_id');
+  }
+
+  Future<void> addFavorite(int plantId) async {
+    int? userId = await getUserId();
+    if (userId == null) {
+      print('User is not logged in');
+      return;
+    }
+
+    final response = await http.post(
+      Uri.parse('${AppConfig.baseUrl}/favorite/favorite/add'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
+        'user_id': userId,
+        'plant_id': plantId,
+      }),
+    );
+
+    if (response.statusCode == 201) {
+      print('Added to favorites');
+    } else {
+      print('Failed to add to favorites');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     String plantName = plantData['plant_name'] ?? 'Tanaman Tidak Diketahui';
-
-    String latinName = plantData['latin_name'] ?? 'SITOGA';
+    String latinName = plantData['nama_latin'] ?? 'SITOGA';
     String description = plantData['description'] ?? 'Tidak ada deskripsi tersedia.';
     String plantImage = plantData['image_path'] ?? 'assets/placeholder.jpg'; 
-    List<String> benefits = plantData['benefits'] ?? []; 
-
+    String benefits = plantData['manfaat'] ?? '';  // Mengubah menjadi string
 
     return Scaffold(
       appBar: AppBar(
@@ -34,11 +64,9 @@ class PlantDetailPage extends StatelessWidget {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-
                     Color(0XFF72BF78), 
                     Color(0XFFFA0D683), 
                     Color(0XFFF1F8E8), 
-
                   ],
                   stops: [0.01, 0.1, 1.0],
                   begin: Alignment.topCenter,
@@ -60,17 +88,13 @@ class PlantDetailPage extends StatelessWidget {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(12.0),
                       child: Image.network(
-
                         plantImage, 
-
                         width: 180,
                         height: 180,
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) {
                           return Image.asset(
-
                             'assets/placeholder.jpg', 
-
                             width: 180,
                             height: 180,
                             fit: BoxFit.cover,
@@ -88,7 +112,6 @@ class PlantDetailPage extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-
                   SizedBox(height: 8),
                   Text(
                     latinName,
@@ -98,22 +121,18 @@ class PlantDetailPage extends StatelessWidget {
                       fontStyle: FontStyle.italic,
                     ),
                   ),
-
                   SizedBox(height: 16),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Text(
                       description,
-
                       textAlign: TextAlign.justify, 
-
                       style: TextStyle(
                         color: Color(0XFF1A5319),
                         fontSize: 16,
                       ),
                     ),
                   ),
-
                   SizedBox(height: 24),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
@@ -129,32 +148,45 @@ class PlantDetailPage extends StatelessWidget {
                           ),
                         ),
                         SizedBox(height: 12),
-                        if (benefits.isEmpty)
-                          Text('Tidak ada informasi manfaat untuk tanaman ini.'),
-                        for (var benefit in benefits)
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 8.0),
-                            child: Row(
-                              children: [
-                                Icon(Icons.check, color: Colors.green, size: 20),
-                                SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    benefit,
-                                    style: TextStyle(
-                                      color: Color(0XFF1A5319),
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                        benefits.isEmpty
+                          ? Text('Tidak ada informasi manfaat untuk tanaman ini.')
+                          : Text(
+                              benefits,
+                              style: TextStyle(
+                                color: Color(0XFF1A5319),
+                                fontSize: 16,
+                              ),
                             ),
-                          ),
                       ],
                     ),
                   ),
-
+                  SizedBox(height: 80),
                 ],
+              ),
+            ),
+          ),
+          // Icon Love yang melayang
+          Positioned(
+            right: 20,
+            bottom: 20, // Posisi dari atas
+            child: GestureDetector(
+              onTap: () async {
+                await addFavorite(plantData['plant_id']);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Added to Favorites')),
+                );
+              },
+              child: Container(
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.red, // Warna latar belakang
+                ),
+                child: Icon(
+                  Icons.favorite,
+                  color: Colors.white,
+                  size: 30, // Ukuran ikon
+                ),
               ),
             ),
           ),

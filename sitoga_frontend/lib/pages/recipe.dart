@@ -11,29 +11,22 @@ class _RecipePageState extends State<RecipePage> {
   List<Map<String, String>> allRecipe = [
     {
       "name": "Jamu Jahe Merah Serai",
-      "image": "assets/toga_sirih.jpg",
+      "image": "assets/jamu_jahe.jpg",
       "category": "Herbal",
       "description":
           "Ramuan tradisional yang bermanfaat untuk meningkatkan daya tahan tubuh."
     },
     {
       "name": "Teh Daun Sirih",
-      "image": "assets/belimbing_wuluh.jpg",
+      "image": "assets/teh_herbal.jpeg",
       "category": "Tea",
       "description": "Teh herbal yang kaya manfaat untuk kesehatan tubuh."
     },
     {
       "name": "Ramuan Daun Jambu Biji",
-      "image": "assets/jeruk_nipis.jpg",
+      "image": "assets/ramuan_jambu_biji.jpg",
       "category": "Juice",
       "description": "Minuman segar yang membantu menjaga kesehatan pencernaan."
-    },
-    {
-      "name": "Ramuan Daun Kelor",
-      "image": "assets/nangka.jpg",
-      "category": "Herbal",
-      "description":
-          "Herbal alami yang dipercaya memiliki kandungan gizi tinggi."
     },
   ];
   List<Map<String, String>> displayedRecipe = [];
@@ -190,7 +183,7 @@ class _RecipePageState extends State<RecipePage> {
                         MaterialPageRoute(
                           builder: (context) => RecipeDetailPage(
                             recipeName: recipe["name"]!,
-                            recipeDescription: recipe["description"]!,
+                            // recipeDescription: recipe["description"]!,
                             recipeImagePath: recipe["image"]!,
                             ingredients: ["Ingredient 1", "Ingredient 2"],
                             instructions: ["Step 1", "Step 2"],
@@ -246,7 +239,7 @@ class _RecipePageState extends State<RecipePage> {
                                 fontSize: 14,
                               ),
                               overflow: TextOverflow.ellipsis,
-                              maxLines: 2,
+                              maxLines: 1,
                             ),
                           ),
                         ],

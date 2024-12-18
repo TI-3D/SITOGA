@@ -38,6 +38,7 @@ class Plants(Base):
     # Relasi ke Favorite dan History
     favorites = relationship("Favorite", back_populates="plant")
     histories = relationship("History", back_populates="plant")
+    ingredients = relationship("Ingredients", back_populates="plant")
 
 # Scanned Images
 class ScannedImage(Base):
@@ -80,6 +81,7 @@ class Recipe(Base):
     recipe_name = Column(String(100))
     instructions = Column(Text)
 
+    ingredients = relationship("Ingredients", back_populates="recipe")
 # Ingredients
 class Ingredients(Base):
     __tablename__ = "ingredients"
@@ -88,6 +90,7 @@ class Ingredients(Base):
     plant_id = Column(Integer, ForeignKey('plants.plant_id'))
     quantity = Column(String(50))
 
-
+    plant = relationship("Plants", back_populates="ingredients")
+    recipe = relationship("Recipe", back_populates="ingredients")
 # Create the database tables
 Base.metadata.create_all(bind=engine)
