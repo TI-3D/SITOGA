@@ -1,10 +1,86 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
+import 'dart:typed_data';
 import 'dart:convert';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import '../config/config.dart';
+import 'plant_detail.dart';
+
+class PredictionResultDialog extends StatelessWidget {
+  final Map<String, dynamic> result;
+
+  const PredictionResultDialog({Key? key, required this.result}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      backgroundColor: Color(0XFFA0D683),
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Prediction Result',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Color(0XFF1A5319),
+              ),
+            ),
+            SizedBox(height: 15),
+            Text(
+              'Plant: ${result['plant_name']}',
+              style: TextStyle(fontSize: 16, color: Color(0XFF1A5319)),
+            ),
+            Text(
+              'Confidence: ${(result['confidence'] * 100).toStringAsFixed(1)}%',
+              style: TextStyle(fontSize: 16, color: Color(0XFF1A5319)),
+            ),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 241, 89, 78),
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                  child: Text('Close'),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0XFF72BF78),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context); // Close dialog
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PlantDetailPage(plantData: result),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    'View Details',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 class CameraScannerPage extends StatefulWidget {
   @override
@@ -13,12 +89,12 @@ class CameraScannerPage extends StatefulWidget {
 
 class _CameraScannerPageState extends State<CameraScannerPage> {
   File? _imageFile;
+  Uint8List? _webImage;
   final ImagePicker _picker = ImagePicker();
   bool _isLoading = false;
   String? _errorMessage;
 
-  int? _predictionResult;
-
+  double? _predictionResult;
 
   // Colors
   final Color primaryTextColor = Color(0XFF1A5319);
@@ -71,121 +147,179 @@ class _CameraScannerPageState extends State<CameraScannerPage> {
   Future<void> _getImageFromCamera() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.camera);
     if (pickedFile != null) {
-      setState(() {
-        _imageFile = File(pickedFile.path);
-        _predictionResult = null;
-        _errorMessage = null;
-      });
+      if (kIsWeb) {
+        final bytes = await pickedFile.readAsBytes();
+        setState(() {
+          _webImage = bytes;
+          _imageFile = null;
+          _predictionResult = null;
+          _errorMessage = null;
+        });
+      } else {
+        setState(() {
+          _imageFile = File(pickedFile.path);
+          _webImage = null;
+          _predictionResult = null;
+          _errorMessage = null;
+        });
+      }
     }
   }
 
-  Future<void> _getImageFromGallery() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
+  Future<void> _getImageFromFile() async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['jpg', 'jpeg', 'png'],
+        withData: true, // Important for web
+      );
+
+      if (result != null) {
+        if (kIsWeb) {
+          setState(() {
+            _webImage = result.files.first.bytes;
+            _imageFile = null;
+            _predictionResult = null;
+            _errorMessage = null;
+          });
+        } else {
+          setState(() {
+            _imageFile = File(result.files.single.path!);
+            _webImage = null;
+            _predictionResult = null;
+            _errorMessage = null;
+          });
+        }
+      }
+    } catch (e) {
       setState(() {
-        _imageFile = File(pickedFile.path);
-        _predictionResult = null;
-        _errorMessage = null;
+        _errorMessage = 'Error picking file: ${e.toString()}';
       });
     }
   }
 
   Future<void> _predictImage() async {
-    if (_imageFile == null) {
+    if (_imageFile == null && _webImage == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Please select an image first')),
       );
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-      _predictionResult = null;
-    });
+    // Show loading dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 15),
+                Text('Please wait...\nProcessing your image'),
+              ],
+            ),
+          ),
+        );
+      },
+    );
 
     try {
-      // Get user ID from shared preferences
       final SharedPreferences prefs = await SharedPreferences.getInstance();
-
       int? userId = prefs.getInt('user_id');
-
 
       if (userId == null) {
         throw Exception('User not logged in');
       }
 
-      // Create multipart request
       var request = http.MultipartRequest(
         'POST', 
         Uri.parse('${AppConfig.baseUrl}/predict/predict')
       );
 
-      // Add user ID to request
-
       request.fields['user_id'] = userId.toString();
 
+      if (kIsWeb && _webImage != null) {
+        request.files.add(
+          http.MultipartFile.fromBytes(
+            'file',
+            _webImage!,
+            filename: 'image.jpg',
+          )
+        );
+      } else if (!kIsWeb && _imageFile != null) {
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            'file',
+            _imageFile!.path
+          )
+        );
+      }
 
-      // Add image file to request
-      request.files.add(
-        await http.MultipartFile.fromPath(
-          'image', 
-          _imageFile!.path
-        )
-      );
-
-      // Send the request
       var response = await request.send();
-
-      // Read and handle the response
       var responseBody = await response.stream.bytesToString();
 
-      setState(() {
-        _isLoading = false;
-      });
+      // Close loading dialog
+      Navigator.pop(context);
 
       if (response.statusCode == 200) {
-        // Parse the JSON response
         var jsonResponse = json.decode(responseBody);
-        setState(() {
-          _predictionResult = jsonResponse['prediction'] ?? 'No prediction available';
-        });
+        var result = jsonResponse['data'];
+
+        // Show result dialog
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return PredictionResultDialog(result: result);
+          },
+        );
       } else {
+        print('Response body: $responseBody');
         throw Exception('Failed to predict image: ${response.statusCode}');
       }
     } catch (e) {
+      // Close loading dialog if still showing
+      Navigator.pop(context);
+      
       setState(() {
-        _isLoading = false;
         _errorMessage = 'Error: ${e.toString()}';
       });
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to process image: ${e.toString()}')),
+      );
     }
   }
 
-  Widget _buildScanButton({
-    required IconData icon,
-    required String label,
-    required VoidCallback onPressed,
-  }) {
-    return ElevatedButton.icon(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: buttonGreen,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+    Widget _buildScanButton({
+      required IconData icon,
+      required String label,
+      required VoidCallback onPressed,
+    }) {
+      return ElevatedButton.icon(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: buttonGreen,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-      ),
-      onPressed: onPressed,
-      icon: Icon(icon, color: Colors.white),
-      label: Text(
-        label,
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
+        onPressed: onPressed,
+        icon: Icon(icon, color: Colors.white),
+        label: Text(
+          label,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+          ),
         ),
-      ),
-    );
-  }
+      );
+    }
 
   @override
   Widget build(BuildContext context) {
@@ -219,7 +353,7 @@ class _CameraScannerPageState extends State<CameraScannerPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (_imageFile != null)
+              if (_imageFile != null || _webImage != null)
                 Container(
                   height: 200,
                   margin: const EdgeInsets.only(bottom: 20),
@@ -235,10 +369,15 @@ class _CameraScannerPageState extends State<CameraScannerPage> {
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(15),
-                    child: Image.file(
-                      _imageFile!,
-                      fit: BoxFit.cover,
-                    ),
+                    child: _webImage != null
+                      ? Image.memory(
+                          _webImage!,
+                          fit: BoxFit.cover,
+                        )
+                      : Image.file(
+                          _imageFile!,
+                          fit: BoxFit.cover,
+                        ),
                   ),
                 )
               else
@@ -276,15 +415,14 @@ class _CameraScannerPageState extends State<CameraScannerPage> {
                   SizedBox(width: 10),
                   Expanded(
                     child: _buildScanButton(
-                      icon: Icons.photo_library,
-                      label: 'Gallery',
-                      onPressed: _getImageFromGallery,
+                      icon: Icons.folder,
+                      label: 'Browse',
+                      onPressed: _getImageFromFile,
                     ),
                   ),
                 ],
               ),
               SizedBox(height: 20),
-              // Predict button with loading and error handling
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: buttonGreen,
@@ -306,7 +444,6 @@ class _CameraScannerPageState extends State<CameraScannerPage> {
                     ),
               ),
               
-              // Display prediction result or error
               if (_errorMessage != null)
                 Padding(
                   padding: const EdgeInsets.only(top: 20),

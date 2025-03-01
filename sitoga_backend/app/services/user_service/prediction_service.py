@@ -66,4 +66,9 @@ def predict_image(image_path: str, user_id: int, db: Session, image_size: tuple 
     return {
         "predicted_label": predicted_label,
         "confidence": float(np.max(predictions)),
+        "plant_name": detected_plant.plant_name,
+        "manfaat": detected_plant.manfaat,
+        "description": detected_plant.description,
+        "nama_latin": detected_plant.nama_latin,
+        "image_path": detected_plant.image_path,
     }

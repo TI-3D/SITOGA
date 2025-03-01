@@ -13,6 +13,7 @@ router = APIRouter()
 
 @router.post("/predict/")
 async def predict(file: UploadFile = File(...), user_id: int = Form(...), db: Session = Depends(get_db)):
+    print(f"Received request - file: {file.filename}, user_id: {user_id}")
     """
     Endpoint untuk memprediksi gambar.
     Argumen:
